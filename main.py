@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.spatial.distance import cityblock
-#change
+#change 2
 class Agent:
   def __init__(self, current_pos, other_pos, reward, have_block):
     self.current_pos = current_pos 

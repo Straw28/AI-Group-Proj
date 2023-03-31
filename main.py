@@ -1,6 +1,28 @@
 import numpy as np
 from scipy.spatial.distance import cityblock
-#change 2
+
+#Enviorment --> the whole world
+#State --> part of the world, (x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f)
+
+#state module
+'''
+class State:
+  def __init__(x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f):
+    #intitalize all the stuffs
+    def currentState(): #returns current state
+'''
+
+
+#policy module:
+'''
+class Policy:
+    def __init__(?):
+      def prandom(current state, agent):
+      def pexploit(current state, agent):
+      def pgreedy(current state, agent):
+'''
+
+
 class Agent:
   def __init__(self, current_pos, other_pos, reward, have_block):
     self.current_pos = current_pos 

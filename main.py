@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.spatial.distance import cityblock
-
+#change
 class Agent:
   def __init__(self, current_pos, other_pos, reward, have_block):
     self.current_pos = current_pos 
@@ -92,3 +92,5 @@ print(Layer_3)
 # Luckily, scipy has a library to compute the City Block (Manhattan) distance.
 manhat_distance = cityblock(fem_agent.current_pos,male_agent.current_pos)
 print('Manhattan Distance between', fem_agent.current_pos, 'and', male_agent.current_pos, 'is', manhat_distance)
+
+#I am changing the file

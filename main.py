@@ -1,10 +1,15 @@
 import numpy as np
 from scipy.spatial.distance import cityblock
 
-#Enviorment --> the whole world
-#State --> part of the world, (x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f)
+# Environment --> the whole world
+# State --> part of the world, (x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f)
+# TODO: operators class needs to check for out-of-bounds
+# TODO: implement out of bounds function in Cell class
+# TODO: keep track of env -> make an environment class
+# TODO: test if the reward for each operator is correct
+# TODO: make the Model class/function in Module (Michelle)
 
-#state module
+# Module: State class 
 '''
 class State:
   def __init__(x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f):
@@ -13,7 +18,7 @@ class State:
 '''
 
 
-#policy module:
+# Module: Policy class
 '''
 class Policy:
     def __init__(?):
@@ -22,7 +27,7 @@ class Policy:
       def pgreedy(current state, agent):
 '''
 
-
+# don't need a state class bc everything is in agent or cells
 class Agent:
   def __init__(self, current_pos, other_pos, reward, have_block):
     self.current_pos = current_pos 
@@ -33,34 +38,50 @@ class Agent:
     # boolean
     self.have_block = have_block
 
-# operators class needs to check for out-of-bounds
-
 # parent class
 class Cell: 
-  def __init__(self, num_blocks, location):
+  def __init__(self, num_blocks, location, is_out, reward=-1):
     self.num_blocks = num_blocks
     # location is a tuple of 3 ints
     self.location = location
+    # out_of_bounds is a boolean
+    self.is_out = is_out
+    # reward is, by default, -1 for regular cells
+    self.reward = reward 
+    # boolean to check if an operator is out of bounds
+    # def is_out_bounds(location):
+    #   if (location != )
+
 
 # Pickup and DropOff are children classes of the Cell parent class
 class PickUp(Cell): 
-  def __init__(self, num_blocks, location, reward):
+  def __init__(self, num_blocks, location, is_out, reward):
     # super() automatically inherit the methods and properties from its parent
-    super().__init__(num_blocks, location) 
+    super().__init__(num_blocks, location, is_out) 
     # remaining
     def is_valid(num_blocks):
       return num_blocks != 0
+    # 14 points is a constant 
+    self.reward = 14
 
 class DropOff(Cell): 
-  def __init__(self, num_blocks, location, reward):
-    super().__init__(num_blocks, location) 
+  def __init__(self, num_blocks, location, is_out, reward):
+    # inherits parent properties
+    super().__init__(num_blocks, location, is_out) 
     # capacity 
     def is_valid(num_blocks):
       return num_blocks != 5
+    # 14 points is a constant 
+    self.reward = 14
 
-# class Risky(Cell):
-#   def __init__(self, num_blocks, location, )
-# keep track of env -> make an environment class
+class Risky(Cell):
+  def __init__(self, num_blocks, location, is_out, reward):
+    # inherits parent properties
+    super().__init__(num_blocks, location, is_out) 
+    # -2 points is a constant
+    self.reward = -2
+
+  
 
 var_alpha = 0.3
 var_lambda = 0.5

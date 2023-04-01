@@ -33,6 +33,8 @@ class Agent:
     # boolean
     self.have_block = have_block
 
+# operators class needs to check for out-of-bounds
+
 # parent class
 class Cell: 
   def __init__(self, num_blocks, location):
@@ -42,7 +44,7 @@ class Cell:
 
 # Pickup and DropOff are children classes of the Cell parent class
 class PickUp(Cell): 
-  def __init__(self, num_blocks, location):
+  def __init__(self, num_blocks, location, reward):
     # super() automatically inherit the methods and properties from its parent
     super().__init__(num_blocks, location) 
     # remaining
@@ -50,12 +52,14 @@ class PickUp(Cell):
       return num_blocks != 0
 
 class DropOff(Cell): 
-  def __init__(self, num_blocks, location):
+  def __init__(self, num_blocks, location, reward):
     super().__init__(num_blocks, location) 
     # capacity 
     def is_valid(num_blocks):
       return num_blocks != 5
 
+# class Risky(Cell):
+#   def __init__(self, num_blocks, location, )
 # keep track of env -> make an environment class
 
 var_alpha = 0.3

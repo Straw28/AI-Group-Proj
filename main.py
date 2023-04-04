@@ -198,19 +198,19 @@ class Policy:
     directions = self.directionParser(agent)
     print("This are the directions: ", directions)
     for direction in directions: #this is to check if there is a pick up or drop off available
-      if self.pickUpAndDropOffCheck(agent, direction, pickupArray, dropoffArray) != -1:
+      if self.pickUpAndDropOffCheck(agent, agent2, direction, pickupArray, dropoffArray) != -1:
         print("I found a reward")
         return
     print("this is the agent positions before: ", agent.current_pos)
     r = np.random.choice(directions)
     print("This is the direction we took: ", r)
-    self.takeDirection(agent, world, r)
+    self.takeDirection(agent, agent2 ,world, r)
 
   def PGreedy(self, agent, agent2, world, pickupArray, dropoffArray):
     directions = self.directionParser(agent)
     print("This are the directions: ", directions)
     for direction in directions: #this is to check if there is a pick up or drop off available
-      if self.pickUpAndDropOffCheck(agent, direction, pickupArray, dropoffArray) != -1:
+      if self.pickUpAndDropOffCheck(agent, agent2, direction, pickupArray, dropoffArray) != -1:
         print("I found a reward")
         return
 
@@ -218,7 +218,7 @@ class Policy:
     directions = self.directionParser(agent)
     print("This are the directions: ", directions)
     for direction in directions: #this is to check if there is a pick up or drop off available
-      if self.pickUpAndDropOffCheck(agent, direction, pickupArray, dropoffArray) != -1:
+      if self.pickUpAndDropOffCheck(agent, agent2, direction, pickupArray, dropoffArray) != -1:
         print("I found a reward")
         return
 

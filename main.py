@@ -19,18 +19,214 @@ class State:
 
 
 # Module: Policy class
-'''
 class Policy:
-    def __init__(?):
-      def prandom(current state, agent):
-      def pexploit(current state, agent):
-      def pgreedy(current state, agent):
-'''
+  def directionParser(self, agent): #this function tells us what direction the agent is currently able to take
+    dirArray = [0, 1, 2, 3, 4, 5]
+    #[up, down, north, south, east, west]
+
+    if agent.current_pos[0] - 1 < 0 or (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos:
+      dirArray.remove(0) #up
+    if agent.current_pos[0] + 1 > 2 or (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos:
+      dirArray.remove(1) #down
+    if agent.current_pos[1] - 1 < 0 or (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2]) == agent.other_pos:
+      dirArray.remove(2) #north
+    if agent.current_pos[1] + 1 > 2 or (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2]) == agent.other_pos:
+      dirArray.remove(3) #south
+    if agent.current_pos[2] + 1 > 2 or (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1) == agent.other_pos:
+      dirArray.remove(4) #east
+    if agent.current_pos[2] - 1 < 0 or (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1) == agent.other_pos:
+      dirArray.remove(5) #west
+
+    return dirArray
+
+  def pickUpAndDropOffCheck(self, agent, agent2, direction, pickupArray, dropoffArray):
+    #this function checks if there is a pick up/drop off on the location that we might go to
+    if direction == 0:  # up
+      if agent.have_block == 0:
+        for p in pickupArray:
+          if (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2]) == p.location and p.is_valid():
+            agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
+            agent.reward += 14
+            agent.have_block = 1
+            p.num_blocks -= 1
+            agent2.other_pos = agent.current_pos
+            return direction
+      else:
+        for d in dropoffArray:
+          if (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2]) == d.location and d.is_valid():
+            agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
+            agent.reward += 14
+            agent.have_block = 0
+            d.num_blocks += 1
+            agent2.other_pos = agent.current_pos
+            return direction
+
+    elif direction == 1:
+      if agent.have_block == 0:
+        for p in pickupArray:
+          if (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2]) == p.location and p.is_valid():
+            agent.current_pos = (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
+            agent.reward += 14
+            agent.have_block = 1
+            p.num_blocks -= 1
+            agent2.other_pos = agent.current_pos
+            return direction
+      else:
+        for d in dropoffArray:
+          if (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2]) == d.location and d.is_valid():
+            agent.current_pos = (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
+            agent.reward += 14
+            agent.have_block = 0
+            d.num_blocks += 1
+            agent2.other_pos = agent.current_pos
+            return direction
+
+    elif direction == 2:
+      if agent.have_block == 0:
+        for p in pickupArray:
+          if (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2]) == p.location and p.is_valid():
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
+            agent.reward += 14
+            agent.have_block = 1
+            p.num_blocks -= 1
+            agent2.other_pos = agent.current_pos
+            return direction
+      else:
+        for d in dropoffArray:
+          if (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2]) == d.location and d.is_valid():
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
+            agent.reward += 14
+            agent.have_block = 0
+            d.num_blocks += 1
+            agent2.other_pos = agent.current_pos
+            return direction
+
+    elif direction == 3:
+      if agent.have_block == 0:
+        for p in pickupArray:
+          if (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2]) == p.location and p.is_valid():
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
+            agent.reward += 14
+            agent.have_block = 1
+            p.num_blocks -= 1
+            agent2.other_pos = agent.current_pos
+            return direction
+      else:
+        for d in dropoffArray:
+          if (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2]) == d.location and d.is_valid():
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
+            agent.reward += 14
+            agent.have_block = 0
+            d.num_blocks += 1
+            agent2.other_pos = agent.current_pos
+            return direction
+
+    elif direction == 4:
+      if agent.have_block == 0:
+        for p in pickupArray:
+          if (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1) == p.location and p.is_valid():
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
+            agent.reward += 14
+            agent.have_block = 1
+            p.num_blocks -= 1
+            agent2.other_pos = agent.current_pos
+            return direction
+      else:
+        for d in dropoffArray:
+          if (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1) == d.location and d.is_valid():
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
+            agent.reward += 14
+            agent.have_block = 0
+            d.num_blocks += 1
+            agent2.other_pos = agent.current_pos
+            return direction
+    elif direction == 5:
+      if agent.have_block == 0:
+        for p in pickupArray:
+          if (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1) == p.location and p.is_valid():
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
+            agent.reward += 14
+            agent.have_block = 1
+            p.num_blocks -= 1
+            agent2.other_pos = agent.current_pos
+            return direction
+      else:
+        for d in dropoffArray:
+          if (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1) == d.location and d.is_valid():
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
+            agent.reward += 14
+            agent.have_block = 0
+            d.num_blocks += 1
+            agent2.other_pos = agent.current_pos
+            return direction
+
+    return -1
+
+  def takeDirection(self, agent, agent2, world, direction):
+    if direction == 0:
+      agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
+      print("this is the agent positions after: ", agent.current_pos)
+      agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
+      agent2.other_pos = agent.current_pos
+    elif direction == 1:
+      agent.current_pos = (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
+      print("this is the agent positions after: ", agent.current_pos)
+      agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
+      agent2.other_pos = agent.current_pos
+    elif direction == 2:
+      agent.current_pos = (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
+      print("this is the agent positions after: ", agent.current_pos)
+      agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
+      agent2.other_pos = agent.current_pos
+    elif direction == 3:
+      agent.current_pos = (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
+      print("this is the agent positions after: ", agent.current_pos)
+      agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
+      agent2.other_pos = agent.current_pos
+    elif direction == 4:
+      agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
+      print("this is the agent positions after: ", agent.current_pos)
+      agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
+      agent2.other_pos = agent.current_pos
+    elif direction == 5:
+      agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
+      print("this is the agent positions after: ", agent.current_pos)
+      agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
+      agent2.other_pos = agent.current_pos
+
+  def PRandom(self, agent, agent2, world, pickupArray, dropoffArray):
+    directions = self.directionParser(agent)
+    print("This are the directions: ", directions)
+    for direction in directions: #this is to check if there is a pick up or drop off available
+      if self.pickUpAndDropOffCheck(agent, direction, pickupArray, dropoffArray) != -1:
+        print("I found a reward")
+        return
+    print("this is the agent positions before: ", agent.current_pos)
+    r = np.random.choice(directions)
+    print("This is the direction we took: ", r)
+    self.takeDirection(agent, world, r)
+
+  def PGreedy(self, agent, agent2, world, pickupArray, dropoffArray):
+    directions = self.directionParser(agent)
+    print("This are the directions: ", directions)
+    for direction in directions: #this is to check if there is a pick up or drop off available
+      if self.pickUpAndDropOffCheck(agent, direction, pickupArray, dropoffArray) != -1:
+        print("I found a reward")
+        return
+
+  def PExploit(self, agent, agent2, world, pickupArray, dropoffArray):
+    directions = self.directionParser(agent)
+    print("This are the directions: ", directions)
+    for direction in directions: #this is to check if there is a pick up or drop off available
+      if self.pickUpAndDropOffCheck(agent, direction, pickupArray, dropoffArray) != -1:
+        print("I found a reward")
+        return
+
 
 # don't need a state class bc everything is in agent or cells
 class Agent:
   def __init__(self, current_pos, other_pos, reward, have_block):
-    self.current_pos = current_pos 
+    self.current_pos = current_pos
     # the other agent's position
     self.other_pos = other_pos
     # cumulative
@@ -39,63 +235,62 @@ class Agent:
     self.have_block = have_block
 
 # parent class
-class Cell: 
-  def __init__(self, num_blocks, location, is_out, reward=-1):
+class Cell:
+  def __init__(self, num_blocks, location, reward=-1):
     self.num_blocks = num_blocks
     # location is a tuple of 3 ints
     self.location = location
-    # out_of_bounds is a boolean
-    self.is_out = is_out
     # reward is, by default, -1 for regular cells
-    self.reward = reward 
+    self.reward = reward
     # boolean to check if an operator is out of bounds
     # def is_out_bounds(location):
     #   if (location != )
 
 
 # Pickup and DropOff are children classes of the Cell parent class
-class PickUp(Cell): 
-  def __init__(self, num_blocks, location, is_out, reward):
+class PickUp(Cell):
+  def __init__(self, num_blocks, location, reward):
     # super() automatically inherit the methods and properties from its parent
-    super().__init__(num_blocks, location, is_out) 
+    super().__init__(num_blocks, location)
     # remaining
-    def is_valid(num_blocks):
-      return num_blocks != 0
-    # 14 points is a constant 
+    # 14 points is a constant
     self.reward = 14
+  def is_valid(num_blocks):
+    return num_blocks != 0
 
-class DropOff(Cell): 
-  def __init__(self, num_blocks, location, is_out, reward):
+class DropOff(Cell):
+  def __init__(self, num_blocks, location, reward):
     # inherits parent properties
-    super().__init__(num_blocks, location, is_out) 
-    # capacity 
-    def is_valid(num_blocks):
-      return num_blocks != 5
-    # 14 points is a constant 
-    self.reward = 14
+    super().__init__(num_blocks, location)
+    self.reward = 14  # 14 points is a constant
+    # capacity
+  def is_valid(num_blocks):
+    return num_blocks != 5
 
 class Risky(Cell):
   def __init__(self, num_blocks, location, is_out, reward):
     # inherits parent properties
-    super().__init__(num_blocks, location, is_out) 
+    super().__init__(num_blocks, location, is_out)
     # -2 points is a constant
     self.reward = -2
 
-  
 
 var_alpha = 0.3
 var_lambda = 0.5
 
 # initialized
-fem_agent = Agent((1,1,1), (3,2,3), 0, 0) # her pos, his pos, reward, have_block
-male_agent = Agent((3,2,3), (1,1,1), 0, 0) 
+fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0) # her pos, his pos, reward, have_block
+male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
 # cells
-pickup1 = PickUp(10, (3,3,2)) # number of blocks currently held, location of the cells
-pickup2 = PickUp(10, (2,2,1))
-dropoff1 = DropOff(0, (1,1,3))
-dropoff2 = DropOff(0,(3,2,3))
-dropoff3 = DropOff(0,(1,1,2))
-dropoff4 = DropOff(0, (3,1,1))
+pickup1 = PickUp(10, (2, 2, 1), 14)  # number of blocks currently held, location of the cells
+pickup2 = PickUp(10, (1, 1, 0), 14)
+dropoff1 = DropOff(0, (0, 0, 2), 14)
+dropoff2 = DropOff(0, (2, 1, 2), 14)
+dropoff3 = DropOff(0, (0, 0, 1), 14)
+dropoff4 = DropOff(0, (2, 0, 0), 14)
+
+pickupArray = [pickup1, pickup2]
+dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
 # Note that he indexes at one 
 # risky:(2,2,2),(3,2,1)
 
@@ -108,15 +303,18 @@ print("Q-Table")
 print(q_table)
 
 # our environment based on the reward
-world = [[[-1, -1, -1], [-1, 14, -1], [14, -2, -1]], #1 
+world = [[[-1, -1, -1], [-1, 14, -1], [14, -2, -1]], #1
          [[14, -1, -1], [-1, -2, -1], [-1, -1, 14]], #2
          [[14, -1, -1], [-1, -1, -1], [-1, 14, -1]]] #3
 
 world = np.array(world)
 
+pol = Policy()
+pol.PRandom(male_agent, fem_agent, world, pickupArray, dropoffArray)
+
 #pick up: +14, drop off: +14, risky: -2, path: -1
 
-Layer_1 = [[-1, -1, -1], [-1, 'P', -1], ['D', 'R', -1]]
+'''Layer_1 = [[-1, -1, -1], [-1, 'P', -1], ['D', 'R', -1]]
 Layer_2 = [['D', -1, -1], [-1, 'R', -1], [-1, -1, 'P']]
 Layer_3 = [['D', -1, -1], [-1, -1, -1], [-1, 'D', -1]]
 
@@ -127,10 +325,10 @@ Layer_2 = np.array(Layer_2).reshape((3,3))
 Layer_3 = np.array(Layer_3).reshape((3,3))
 print(Layer_1)
 print(Layer_2)
-print(Layer_3)
+print(Layer_3)'''
 
 
-# Manhattan distance formula: 
+# Manhattan distance formula:
   # d = |x1 - x2| + |y1 - y2|
 # Luckily, scipy has a library to compute the City Block (Manhattan) distance.
 manhat_distance = cityblock(fem_agent.current_pos,male_agent.current_pos)

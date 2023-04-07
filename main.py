@@ -9,7 +9,11 @@ from scipy.spatial.distance import cityblock
 # TODO: test if the reward for each operator is correct
 # TODO: make the Model class/function in Module (Michelle)
 
-# Module: State class 
+# Module: State class
+# Have to figure out and reduce the number of states in state space first to work with Q-learning & SARSA algorithms
+# Original Number of States from (x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f) is 182 million states (too huge)
+# 27 (for male x,y,z) * 27 (for female x',y',z') * 2 (male w/ or w/o block) * 2 (female w/ or w/o block) *5*5*5*5 *10*10
+# The four 5's are the blocks from four dropoff cells (a, b, c, d) and two 10's are blocks from two pickup cells (e, f)
 '''
 class State:
   def __init__(x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f):

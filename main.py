@@ -21,7 +21,6 @@ class State:
     def currentState(): #returns current state
 '''
 
-
 # Module: Policy class
 class Policy:
   def directionParser(self, agent): #this function tells us what direction the agent is currently able to take
@@ -226,6 +225,46 @@ class Policy:
         print("I found a reward")
         return
 
+#Module: Reward Class, 
+class Reward: #maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time
+  
+  def __init__(self, futureAgent, action, currentAgent):
+    #future state (stored within agent)
+    self.futureAgent = futureAgent
+    #action integer value of moving (up down east west north south)
+    self.action = action
+    #current state (stored within agent)
+    self.currentAgent = currentAgent
+
+  #returns a bool, checks if the agent is in a pickup cell & does not have a block
+  def canPickUp(currentAgent, action, futureAgent): #FIXME keeping track of the 10 blocks in the state space. 
+    if currentAgent.have_block == False:
+      if futureAgent.current_pos == (2,2,1) or futureAgent.current_pos == (3,3,2):
+        return True
+    return False
+
+  #returns a bool, checks if agent is in a drop off cell and has a block
+ def canDropOff(currentAgent, action, futureAgent):
+    if currentAgent.have_block == True: #FIXME also gotta keep track of if the drop offs are full or not
+      if futureAgent.current_pos == (1,1,2) or futureAgent.current_pos == (1,1,3) or futureAgent.current_pos == (3,1,1) or futureAgent.current_pos == (3,2,3):
+        return True
+    return False
+
+  #returns a bool checks if agent is in a risky cell
+  def isRisky(currentAgent, action, futureAgent):
+    if futureAgent.current_pos == (2,2,2) or if futureAgent.current_pos == (3,2,1):
+      return True
+    return False
+
+  #returns an integer value of the reward
+  def rewardReturn(currentAgent, action, futureAgent):
+    if canPickUp(currentAgent, action, futureAgent) or canDropOff(currentAgent, action, futureAgent):
+      return 14
+    elif isRisky(currentAgent, action, futureAgent):
+      return -2
+    else:
+      return -1
+    
 
 # don't need a state class bc everything is in agent or cells
 class Agent:

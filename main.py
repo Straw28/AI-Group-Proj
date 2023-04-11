@@ -226,50 +226,50 @@ class Policy:
         return
 
 #Module: Reward Class
-class Reward:  #Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
- 
-  def __init__(self, futureAgent, action, currentAgent, pickUpCell, dropOffCell):
-    # future state (stored within agent)
-    self.futureAgent = futureAgent
-    # action integer value of moving (up, down, east, west, north, south)
-    self.action = action
-    # current state (stored within agent)
-    self.currentAgent = currentAgent
-    
-    # adding pickup/dropoff cells to keep track of the number of blocks
-    self.pickUpCell = pickUpCell
-    self.dropOffCell = dropOffCell
+  class Reward:  #Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
+  
+    def __init__(self, futureAgent, action, currentAgent, pickUpCell, dropOffCell):
+      # future state (stored within agent)
+      self.futureAgent = futureAgent
+      # action integer value of moving (up, down, east, west, north, south)
+      self.action = action
+      # current state (stored within agent)
+      self.currentAgent = currentAgent
+      
+      # adding pickup/dropoff cells to keep track of the number of blocks
+      self.pickUpCell = pickUpCell
+      self.dropOffCell = dropOffCell
 
-  # returns a bool, checks if the agent is in a pickup cell & does not have a block
-  def canPickUp(self): 
-    if self.currentAgent.have_block == False:
-      if self.futureAgent.current_pos == (2, 2, 1) or self.futureAgent.current_pos == (3, 3, 2):
-        if self.pickUpCell.is_valid():
-          return True
-    return False
+    # returns a bool, checks if the agent is in a pickup cell & does not have a block
+    def canPickUp(self): 
+      if self.currentAgent.have_block == False:
+        if self.futureAgent.current_pos == (2, 2, 1) or self.futureAgent.current_pos == (3, 3, 2):
+          if self.pickUpCell.is_valid():
+            return True
+      return False
 
-  # returns a bool, checks if agent is in a drop off cell and has a block
-  def canDropOff(self):
-    if self.currentAgent.have_block == True: #FIXME also gotta keep track of if the drop offs are full or not
-      if self.futureAgent.current_pos == (1, 1, 2) or self.futureAgent.current_pos == (1, 1, 3) or self.futureAgent.current_pos == (3, 1, 1) or self.futureAgent.current_pos == (3, 2, 3):
-        if self.dropOffCell.is_valid():
-          return True
-    return False
+    # returns a bool, checks if agent is in a drop off cell and has a block
+    def canDropOff(self):
+      if self.currentAgent.have_block == True: #FIXME also gotta keep track of if the drop offs are full or not
+        if self.futureAgent.current_pos == (1, 1, 2) or self.futureAgent.current_pos == (1, 1, 3) or self.futureAgent.current_pos == (3, 1, 1) or self.futureAgent.current_pos == (3, 2, 3):
+          if self.dropOffCell.is_valid():
+            return True
+      return False
 
-  # returns a bool, checks if agent is in a risky cell
-  def isRisky(self):
-    if self.futureAgent.current_pos == (2, 2, 2) or self.futureAgent.current_pos == (3, 2, 1):
-      return True
-    return False
+    # returns a bool, checks if agent is in a risky cell
+    def isRisky(self):
+      if self.futureAgent.current_pos == (2, 2, 2) or self.futureAgent.current_pos == (3, 2, 1):
+        return True
+      return False
 
-  # returns an integer value of the reward
-  def rewardReturn(self): 
-    if self.canPickUp() or self.canDropOff():
-      return 14
-    elif self.isRisky():
-      return -2
-    else:
-      return -1
+    # returns an integer value of the reward
+    def rewardReturn(self): 
+      if self.canPickUp() or self.canDropOff():
+        return 14
+      elif self.isRisky():
+        return -2
+      else:
+        return -1
 
 # don't need a state class bc everything is in agent or cells
 class Agent:

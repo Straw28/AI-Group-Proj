@@ -227,7 +227,6 @@ class Policy:
 
 #Module: Reward Class
 class Reward:  #Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
- 
   def __init__(self, futureAgent, action, currentAgent, pickUpCell, dropOffCell):
     # future state (stored within agent)
     self.futureAgent = futureAgent
@@ -324,7 +323,7 @@ class Risky(Cell):
 
 
 var_alpha = 0.3
-var_lambda = 0.5
+var_gamma = 0.5
 
 # initialized
 fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0) # her pos, his pos, reward, have_block

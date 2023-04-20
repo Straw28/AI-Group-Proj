@@ -21,7 +21,6 @@ class State:
     def currentState(): #returns current state
 '''
 # Module: Action class --> actually takes the action
-
 world = [[[0, 0, 0], [0, 10, 0],  [5, 0, 0]],       # 1
          [[5, 0, 0], [0, 0, 0],   [0, 0, 10]],       # 2
          [[5, 0, 0], [0, 0, 0],   [0, 5, 0]]]        # 3
@@ -30,31 +29,52 @@ world = np.array(world)
 
 # Module: Reward Class
 # Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
+
+def printQTable(qtable):
+    for a in range(len(q.Qtable)):
+        for b in range(len(q.Qtable[a])):
+            for c in range(len(q.Qtable[a][b])):
+                for d in range(len(q.Qtable[a][b][c])):
+                    for e in range(len(q.Qtable[a][b][c][d])):
+                        print("Q value at 0: ", q.Qtable[a][b][c][d][e])
+
+
+def printWorld():
+
+    for i in range(world.shape[0]):
+        print("Layer", i+1, ":")
+        for j in range(world.shape[1]):
+            for k in range(world.shape[2]):
+                print(world[i][j][k], end=" ")
+            print()
+        print()
+
+
 class Reward:
-    #actions = Action()
+    # actions = Action()
 
     def canPickUp(self, futureAgent, action, currentAgent, world):
         if currentAgent.have_block == False:
-            if futureAgent.current_pos == (2, 2, 1) and world[0, 1, 1] > 0:
+            if futureAgent.current_pos == (0,1,1) and world[0, 1, 1] > 0:
                 return True
-            elif futureAgent.current_pos == (3, 3, 2) and world[1, 2, 2] > 0:
+            elif futureAgent.current_pos == (1, 2, 2) and world[1, 2, 2] > 0:
                 return True
         return False
 
     def canDropOff(self, futureAgent, action, currentAgent, world):
         if currentAgent.have_block == True:
-            if futureAgent.current_pos == (1, 1, 2) and world[1, 0, 0] > 0:
+            if futureAgent.current_pos == (1, 0, 0) and world[1, 0, 0] > 0:
                 return True
-            elif futureAgent.current_pos == (1, 1, 3) and world[2, 0, 0] > 0:
+            elif futureAgent.current_pos == (2, 0, 0) and world[2, 0, 0] > 0:
                 return True
-            elif futureAgent.current_pos == (3, 1, 1) and world[0, 0, 2] > 0:
+            elif futureAgent.current_pos == (0, 0, 2) and world[0, 0, 2] > 0:
                 return True
-            elif futureAgent.current_pos == (3, 2, 3) and world[2, 1, 2] > 0:
+            elif futureAgent.current_pos == (2, 1, 2) and world[2, 1, 2] > 0:
                 return True
         return False
 
     def isRisky(self, futureAgent, action, currentAgent, world):
-        if futureAgent.current_pos == (2, 2, 2) or futureAgent.current_pos == (3, 2, 1):
+        if futureAgent.current_pos == (1,1,1) or futureAgent.current_pos == (0,1,2):
             return True
         return False
 
@@ -69,102 +89,108 @@ class Reward:
 
 class Action:
     rewards = Reward()
-
+    
     def takeDirection(self, agent, agent2, world, direction):
+        # print("world before taking action")
+        # printWorld()
         agentreward = 0
         oldAgent = agent
         if direction == 0:
             agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
+            # print("Does the agent have a block? (inside the if): ", agent.have_block)
             # print("this is the agent positions after: ", agent.current_pos)
             # should we check this here? does it check if it has a block or not?
             agentreward = self.rewards.rewardReturn(agent, 0, oldAgent, world)
             if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
-                world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
-                if self.rewards.canPickUP(agent, 0, oldAgent, world):
+                world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]] -= 1
+                if self.rewards.canPickUp(agent, 0, oldAgent, world):
                     agent.have_block = 1
                 else:
                     agent.have_block = 0
             agent2.other_pos = agent.current_pos
 
         elif direction == 1:
-            agent.current_pos = (
-                agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
-            print("this is the agent positions after: ", agent.current_pos)
+            agent.current_pos = (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
+            # print("Does the agent have a block? (inside the if): ", agent.have_block)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agentreward = self.rewards.rewardReturn(agent, 0, oldAgent, world)
             if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
-                world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
-                if self.rewards.canPickUP(agent, 0, oldAgent, world):
+                world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]] -= 1
+                if self.rewards.canPickUp(agent, 0, oldAgent, world):
                     agent.have_block = 1
                 else:
                     agent.have_block = 0
             agent2.other_pos = agent.current_pos
 
         elif direction == 2:
-            agent.current_pos = (
-                agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
+            # print("Does the agent have a block? (inside the if): ", agent.have_block)
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agentreward = self.rewards.rewardReturn(agent, 0, oldAgent, world)
             if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
-                world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
-                if self.rewards.canPickUP(agent, 0, oldAgent, world):
+                world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]] -= 1
+                if self.rewards.canPickUp(agent, 0, oldAgent, world):
                     agent.have_block = 1
                 else:
                     agent.have_block = 0
             agent2.other_pos = agent.current_pos
 
         elif direction == 3:
-            agent.current_pos = (
-                agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
+            agent.current_pos = ( agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
+            # print("Does the agent have a block? (inside the if): ", agent.have_block)
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agentreward = self.rewards.rewardReturn(agent, 0, oldAgent, world)
             if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
-                world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
-                if self.rewards.canPickUP(agent, 0, oldAgent, world):
+                world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]] -= 1
+                if self.rewards.canPickUp(agent, 0, oldAgent, world):
                     agent.have_block = 1
                 else:
                     agent.have_block = 0
             agent2.other_pos = agent.current_pos
 
         elif direction == 4:
-            agent.current_pos = (
-                agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
+            # print("Does the agent have a block? (inside the if): ", agent.have_block)
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agentreward = self.rewards.rewardReturn(agent, 0, oldAgent, world)
             if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
-                world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
-                if self.rewards.canPickUP(agent, 0, oldAgent, world):
+                world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]] -= 1
+                if self.rewards.canPickUp(agent, 0, oldAgent, world):
                     agent.have_block = 1
                 else:
                     agent.have_block = 0
             agent2.other_pos = agent.current_pos
 
         elif direction == 5:
-            agent.current_pos = (
-                agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
+            # print("Does the agent have a block? (inside the if): ", agent.have_block)
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agentreward = self.rewards.rewardReturn(agent, 0, oldAgent, world)
             if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
-                world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
-                if self.rewards.canPickUP(agent, 0, oldAgent, world):
+                world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]] -= 1
+                if self.rewards.canPickUp(agent, 0, oldAgent, world):
                     agent.have_block = 1
                 else:
                     agent.have_block = 0
             agent2.other_pos = agent.current_pos
 
-        print("In Action Class taking direction, agent's reward for this move: ", agentreward)
-        print("In Action Class taking direction, agent's new position for this move: ", agent.current_pos[0], agent.current_pos[1],agent.current_pos[2])
-        print("In Action Class taking direction, agent's old position for this move: ", agent.current_pos[0], oldAgent.current_pos[1],oldAgent.current_pos[2])
+        # print("In Action Class taking direction, direction: ", direction)
+        # print("world after: ")
+        # printWorld()
+
         agent.reward += agentreward
 # Module: isValid --> checks if a move is valid or not
+
+
 class isValid:
     # checks for out of bounds & checks for if two agents are in the same block returns an array with valid moves
     # this function tells us what direction the agent is currently able to take
-    temp = (0,0,0) 
+    temp = (0, 0, 0)
+
     def directionParser(self, agent):
         dirArray = [0, 1, 2, 3, 4, 5]
         # [up, down, north, south, east, west]
@@ -195,7 +221,7 @@ class Agent:
         # cumulative
         self.reward = reward
         # boolean
-        self.have_block = have_block #0 = no block 1 = block
+        self.have_block = have_block  # 0 = no block 1 = block
 
 # parent class
 
@@ -253,7 +279,8 @@ class Qtable:
     # explore first (that's where the 500 steps come in)
     # hence why we call prandom because it randomly decides what future state to go to
     rewards = Reward()
-    #Q(s,a) = (1-alpha) * Q(a,s) + alpha*[my_reward.rewardReturn() + gamma * max(Q(a', s'))]
+    # Q(s,a) = (1-alpha) * Q(a,s) + alpha*[my_reward.rewardReturn() + gamma * max(Q(a', s'))]
+
     def qLearning(self, m_agent, f_agent, world, var_gamma, var_alpha, num_steps):
         p = Policy()  # <--- This lets us access the policies
         a = isValid()
@@ -369,6 +396,8 @@ class Policy:
         return num_steps
 
 
+
+
 var_alpha = 0.3
 var_lambda = 0.5
 
@@ -376,16 +405,17 @@ var_lambda = 0.5
 # her pos, his pos, reward, have_block
 fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0)
 male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
+#test_agent = Agent((1, 1, 2), (0, 0, 0), 0, 0)
 # cells
-#zyx bc we use pickup and drop off array for the world not the agent. agent is stored as xyz
+# zyx bc we use pickup and drop off array for the world not the agent. agent is stored as xyz
 pickup1 = (0, 1, 1)
 pickup2 = (1, 2, 2)
 pickupArray = [pickup1, pickup2]
 
-dropoff1 = (1,0,0)
-dropoff2 = (2,0,0)
-dropoff3 = (0,0,2)
-dropoff4 = (2,1,2)
+dropoff1 = (1, 0, 0)
+dropoff2 = (2, 0, 0)
+dropoff3 = (0, 0, 2)
+dropoff4 = (2, 1, 2)
 dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
 
 # Note that he indexes at one
@@ -399,24 +429,22 @@ dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
 # print("Q-Table")
 # print(q_table)
 
-q = Qtable()
-num_steps = 100
-a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
-print("Q-Table")
-print(a)
-
-for a in range(len(q.Qtable)):
-    for b in range(len(q.Qtable[a])):
-        for c in range(len(q.Qtable[a][b])):
-            for d in range(len(q.Qtable[a][b][c])):
-                for e in range(len(q.Qtable[a][b][c][d])):
-                    print("Q value at 0: ", q.Qtable[a][b][c][d][e])
-
+# q = Qtable()
+# num_steps = 100
+# a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+# print("Q-Table")
+# print(a)
+print("world before")
+printWorld()
 pol = Policy()
-pol.PRandom(male_agent, fem_agent, world)
+for i in range(9000):
+    pol.PRandom(male_agent, fem_agent, world)
+
+print("world after")
+printWorld()
 
 print("Reward Male agent: ", male_agent.reward)
-#print("World: ", world[0, 1, 1])  # zyx
+# print("World: ", world[0, 1, 1])  # zyx
 
 # pick up: +14, drop off: +14, risky: -2, path: -1
 
@@ -445,3 +473,5 @@ print(Layer_3)'''
 # q = Qtable()
 # print("Number of steps till finished: ", q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, numSteps))
 # print("Male agent position: ", male_agent.current_pos," Female agent position: ", fem_agent.current_pos)
+print("printing world: ")
+printWorld()

@@ -8,18 +8,14 @@ class State:
     #intitalize all the stuffs
     def currentState(): #returns current state
 '''
-# Module: Action class --> actually takes the action
-
 world = [[[0, 0, 0], [0, 10, 0],  [5, 0, 0]],       # 1
          [[5, 0, 0], [0, 0, 0],   [0, 0, 10]],       # 2
          [[5, 0, 0], [0, 0, 0],   [0, 5, 0]]]        # 3
 
 world = np.array(world)
 
-# Module: Reward Class
-# Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
 class Reward:
-    #actions = Action()
+# Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
 
     def canPickUp(self, futureAgent, currentAgent, world):
         if currentAgent.have_block == False:
@@ -56,18 +52,19 @@ class Reward:
 
 
 class Action:
+    # instantiate a Reward object to be used in Action class
     rewards = Reward()
 
     def takeDirection(self, agent, agent2, world, direction):
-        agentreward = 0
+        agent_reward = 0
         oldAgent = agent
         if direction == 0:
             agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
             # print("this is the agent positions after: ", agent.current_pos)
             # should we check this here? does it check if it has a block or not?
-            agentreward = self.rewards.rewardReturn(agent, oldAgent, world)
+            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
             # reward returns 14 if you're able to pickup or drop off successfully
-            if agentreward == 14: 
+            if agent_reward == 14: 
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
 
@@ -76,8 +73,8 @@ class Action:
                 agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
             print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agentreward = self.rewards.rewardReturn(agent, oldAgent, world)
-            if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
+            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
 
@@ -86,8 +83,8 @@ class Action:
                 agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agentreward = self.rewards.rewardReturn(agent, oldAgent, world)
-            if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
+            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
 
@@ -96,8 +93,8 @@ class Action:
                 agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agentreward = self.rewards.rewardReturn(agent, oldAgent, world)
-            if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
+            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
 
@@ -106,8 +103,8 @@ class Action:
                 agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agentreward = self.rewards.rewardReturn(agent, oldAgent, world)
-            if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
+            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
 
@@ -116,8 +113,8 @@ class Action:
                 agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agentreward = self.rewards.rewardReturn(agent, oldAgent, world)
-            if agentreward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
+            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
 

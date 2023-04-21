@@ -17,35 +17,35 @@ world = np.array(world)
 class Reward:
 # Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
 
-    def canPickUp(self, futureAgent, currentAgent, world):
+    def canPickUp(self, future_agent, currentAgent, world):
         if currentAgent.have_block == False:
-            if futureAgent.current_pos == (2, 2, 1) and world[0, 1, 1] > 0:
+            if future_agent.current_pos == (2, 2, 1) and world[0, 1, 1] > 0:
                 return True
-            elif futureAgent.current_pos == (3, 3, 2) and world[1, 2, 2] > 0:
+            elif future_agent.current_pos == (3, 3, 2) and world[1, 2, 2] > 0:
                 return True
         return False
 
-    def canDropOff(self, futureAgent, currentAgent, world):
+    def canDropOff(self, future_agent, currentAgent, world):
         if currentAgent.have_block == True:
-            if futureAgent.current_pos == (1, 1, 2) and world[1, 0, 0] > 0:
+            if future_agent.current_pos == (1, 1, 2) and world[1, 0, 0] > 0:
                 return True
-            elif futureAgent.current_pos == (1, 1, 3) and world[2, 0, 0] > 0:
+            elif future_agent.current_pos == (1, 1, 3) and world[2, 0, 0] > 0:
                 return True
-            elif futureAgent.current_pos == (3, 1, 1) and world[0, 0, 2] > 0:
+            elif future_agent.current_pos == (3, 1, 1) and world[0, 0, 2] > 0:
                 return True
-            elif futureAgent.current_pos == (3, 2, 3) and world[2, 1, 2] > 0:
+            elif future_agent.current_pos == (3, 2, 3) and world[2, 1, 2] > 0:
                 return True
         return False
 
-    def isRisky(self, futureAgent):
-        if futureAgent.current_pos == (2, 2, 2) or futureAgent.current_pos == (3, 2, 1):
+    def isRisky(self, future_agent):
+        if future_agent.current_pos == (2, 2, 2) or future_agent.current_pos == (3, 2, 1):
             return True
         return False
 
-    def rewardReturn(self, futureAgent,currentAgent, world):
-        if self.canPickUp(futureAgent,  currentAgent, world) or self.canDropOff(futureAgent, currentAgent, world):
+    def rewardReturn(self, future_agent,currentAgent, world):
+        if self.canPickUp(future_agent,  currentAgent, world) or self.canDropOff(future_agent, currentAgent, world):
             return 14
-        elif self.isRisky(futureAgent):
+        elif self.isRisky(future_agent):
             return -2
         else:
             return -1
@@ -74,7 +74,8 @@ class Action:
             print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
-            if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
+            # reward returns 14 if you're able to pickup or drop off successfully
+            if agent_reward == 14:  
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
 
@@ -274,19 +275,18 @@ class Policy:
     rewards = Reward()
     # pickups = PickUp()
     # dropoffs = DropOff()
-   # rewards = Reward(agent, action, agent, pickups, dropoffs)
     
  
-  # PRandom --> it checks if pickup or drop off is possible in the current state. If it's not then
+  # Checks if pick up or drop off is possible in the current state. If it's not then
     def PRandom(self, agent, agent2, world):  # 0 0 0
         directions = self.is_it_valid.directionParser(agent)
         for direction in directions:  # this is to check if there is a pick up or drop off available
-            futureAgent = agent
-            self.myaction.takeDirection(futureAgent, agent2, world, direction)
-            # print(f"Here's the agents new position: {futureAgent.current_pos}")
-            if self.rewards.rewardReturn(futureAgent,agent, world) > 0:
+            future_agent = agent
+            self.myaction.takeDirection(future_agent, agent2, world, direction)
+            # print(f"Here's the agents new position: {future_agent.current_pos}")
+            if self.rewards.rewardReturn(future_agent,agent, world) > 0:
                 print("I found a reward")
-                agent = futureAgent
+                agent = future_agent
                 return
         #print("this is the agent positions before: ", agent.current_pos)
         r = np.random.choice(directions)
@@ -296,9 +296,9 @@ class Policy:
 
     def PGreedy(self, agent, agent2, world):
         directions = self.is_it_valid.directionParser(agent)
-        futureAgent = agent
-        self.myaction.takeDirection(futureAgent, agent2, world, direction)
-        if self.rewards.rewardReturn(futureAgent, agent, world) > 0:
+        future_agent = agent
+        self.myaction.takeDirection(future_agent, agent2, world, direction)
+        if self.rewards.rewardReturn(future_agent, agent, world) > 0:
           print("I found a reward")
           return
 
@@ -311,7 +311,7 @@ class Policy:
     #       return
 
 
-#higher q the better?
+# the higher the q-value the better
         finished = True
         for d in dropoffArray:
             if world[d] > 0:
@@ -326,12 +326,10 @@ def main():
     var_alpha = 0.3
     var_lambda = 0.5
 
-    # initialized agents
-    # her position, his position, reward, have_block
+    # initialized agents: her position, his position, reward, have_block
     fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0)
     male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
-    # cells
-    #ZYX b/c we use pickup and drop off array for the world not the agent. agent is stored as ZYX
+    # cells: ZYX-oriented b/c we use pickup and drop off array for the world not the agent. The agent is stored as XYZ
     pickup1 = (0, 1, 1)
     pickup2 = (1, 2, 2)
     pickupArray = [pickup1, pickup2]

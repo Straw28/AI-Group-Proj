@@ -7,7 +7,7 @@ class State:
     #intitalize all the stuffs
     def currentState(): #returns current state
 '''
-# Module: Action class --> actually takes the action
+
 world = [[[0, 0, 0], [0, 10, 0],  [5, 0, 0]],       # 1
          [[5, 0, 0], [0, 0, 0],   [0, 0, 10]],       # 2
          [[5, 0, 0], [0, 0, 0],   [0, 5, 0]]]        # 3
@@ -35,6 +35,7 @@ def printWorld():
         print()
 
 
+# Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
 # Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
 class Reward:
     # actions = Action()

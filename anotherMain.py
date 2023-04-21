@@ -120,7 +120,7 @@ class Action:
             agent2.other_pos = agent.current_pos
 
 
-# Module: isValid --> checks if a move is valid or not
+# Checks if a move is valid or not
 class isValid:
     # checks for out of bounds & checks for if two agents are in the same block returns an array with valid moves
     # this function tells us what direction the agent is currently able to take
@@ -277,7 +277,7 @@ class Policy:
     # dropoffs = DropOff()
     
  
-  # Checks if pick up or drop off is possible in the current state. If it's not then
+  # Checks if pick up or drop off is possible in the current state.
     def PRandom(self, agent, agent2, world):  # 0 0 0
         directions = self.is_it_valid.directionParser(agent)
         for direction in directions:  # this is to check if there is a pick up or drop off available
@@ -329,6 +329,7 @@ def main():
     # initialized agents: her position, his position, reward, have_block
     fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0)
     male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
+    
     # cells: ZYX-oriented b/c we use pickup and drop off array for the world not the agent. The agent is stored as XYZ
     pickup1 = (0, 1, 1)
     pickup2 = (1, 2, 2)
@@ -340,7 +341,7 @@ def main():
     dropoff4 = (2,1,2)
     dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
 
-    # risky:(2,2,2),(3,2,1)
+    # risky:(1,1,1),(0,1,2)
 
 
     # our Q-table, initialized to 0 on purpose

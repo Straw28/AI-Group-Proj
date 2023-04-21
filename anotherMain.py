@@ -1,34 +1,19 @@
 import numpy as np
 from scipy.spatial.distance import cityblock
 
-# Environment --> the whole world
-# State --> part of the world, (x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f)
-# TODO: operators class needs to check for out-of-bounds
-# TODO: implement out of bounds function in Cell class
-# TODO: keep track of env -> make an environment class
-# TODO: test if the reward for each operator is correct
-# TODO: make the Model class/function in Module (Michelle)
-
-# Module: State class
-# Have to figure out and reduce the number of states in state space first to work with Q-learning & SARSA algorithms
-# Original Number of States from (x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f) is 182 million states (too huge)
-# 27 (for male x,y,z) * 27 (for female x',y',z') * 2 (male w/ or w/o block) * 2 (female w/ or w/o block) *5*5*5*5 *10*10
-# The four 5's are the blocks from four dropoff cells (a, b, c, d) and two 10's are blocks from two pickup cells (e, f)
 '''
 class State:
   def __init__(x, y, z, x’, y’, z’, i, i’, a, b, c, d, e, f):
     #intitalize all the stuffs
     def currentState(): #returns current state
 '''
-# Module: Action class --> actually takes the action
+
 world = [[[0, 0, 0], [0, 10, 0],  [5, 0, 0]],       # 1
          [[5, 0, 0], [0, 0, 0],   [0, 0, 10]],       # 2
          [[5, 0, 0], [0, 0, 0],   [0, 5, 0]]]        # 3
 
 world = np.array(world)
 
-# Module: Reward Class
-# Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
 
 def printQTable(qtable):
     for a in range(len(q.Qtable)):
@@ -49,7 +34,7 @@ def printWorld():
             print()
         print()
 
-
+# Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
 class Reward:
     # actions = Action()
 

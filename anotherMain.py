@@ -327,78 +327,81 @@ class Policy:
 
         return num_steps
 
+def main():
 
-var_alpha = 0.3
-var_lambda = 0.5
+    var_alpha = 0.3
+    var_lambda = 0.5
 
-# initialized agents
-# her position, his position, reward, have_block
-fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0)
-male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
-# cells
-#ZYX b/c we use pickup and drop off array for the world not the agent. agent is stored as ZYX
-pickup1 = (0, 1, 1)
-pickup2 = (1, 2, 2)
-pickupArray = [pickup1, pickup2]
+    # initialized agents
+    # her position, his position, reward, have_block
+    fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0)
+    male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
+    # cells
+    #ZYX b/c we use pickup and drop off array for the world not the agent. agent is stored as ZYX
+    pickup1 = (0, 1, 1)
+    pickup2 = (1, 2, 2)
+    pickupArray = [pickup1, pickup2]
 
-dropoff1 = (1,0,0)
-dropoff2 = (2,0,0)
-dropoff3 = (0,0,2)
-dropoff4 = (2,1,2)
-dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
+    dropoff1 = (1,0,0)
+    dropoff2 = (2,0,0)
+    dropoff3 = (0,0,2)
+    dropoff4 = (2,1,2)
+    dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
 
-
-# risky:(2,2,2),(3,2,1)
-
-# our Q-table, initialized to 0 on purpose
-# Q-table has states as rows and acions/operators as columns
-
-# q_table = np.zeros((3, 3), dtype=int, order='C')
-# print("Q-Table")
-# print(q_table)
-
-q = Qtable()
-num_steps = 1000
-a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
-print("Q-Table")
-print(a)
-
-for a in range(len(q.Qtable)):
-    for b in range(len(q.Qtable[a])):
-        for c in range(len(q.Qtable[a][b])):
-            for d in range(len(q.Qtable[a][b][c])):
-                for e in range(len(q.Qtable[a][b][c][d])):
-                    print("Q value at 0: ", q.Qtable[a][b][c][d][e])
-
-pol = Policy()
-pol.PRandom(male_agent, fem_agent, world)
-
-#print("World: ", world[0, 1, 1])  # zyx
-
-# pick up: +14, drop off: +14, risky: -2, path: -1
-
-'''Layer_1 = [[-1, -1, -1], [-1, 'P', -1], ['D', 'R', -1]]
-Layer_2 = [['D', -1, -1], [-1, 'R', -1], [-1, -1, 'P']]
-Layer_3 = [['D', -1, -1], [-1, -1, -1], [-1, 'D', -1]]
-
-#D: drop-off, P: pick-up, R: risky
-
-Layer_1 = np.array(Layer_1).reshape((3,3))
-Layer_2 = np.array(Layer_2).reshape((3,3))
-Layer_3 = np.array(Layer_3).reshape((3,3))
-print(Layer_1)
-print(Layer_2)
-print(Layer_3)'''
+    # risky:(2,2,2),(3,2,1)
 
 
-# Manhattan distance formula:
-# d = |x1 - x2| + |y1 - y2|
-# Luckily, scipy has a library to compute the City Block (Manhattan) distance.
-# manhat_distance = cityblock(fem_agent.current_pos, male_agent.current_pos)
-# print('Manhattan Distance between', fem_agent.current_pos, 'and', male_agent.current_pos, 'is', manhat_distance)
+    # our Q-table, initialized to 0 on purpose
+    # Q-table has states as rows and acions/operators as columns
 
-# numSteps = 10000
+    # q_table = np.zeros((3, 3), dtype=int, order='C')
+    # print("Q-Table")
+    # print(q_table)
 
-# q = Qtable()
-# print("Number of steps till finished: ", q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, numSteps))
-# print("Male agent position: ", male_agent.current_pos," Female agent position: ", fem_agent.current_pos)
+    q = Qtable()
+    num_steps = 1000
+    a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+    print("Q-Table")
+    print(a)
+
+    for a in range(len(q.Qtable)):
+        for b in range(len(q.Qtable[a])):
+            for c in range(len(q.Qtable[a][b])):
+                for d in range(len(q.Qtable[a][b][c])):
+                    for e in range(len(q.Qtable[a][b][c][d])):
+                        print("Q value at 0: ", q.Qtable[a][b][c][d][e])
+
+    pol = Policy()
+    pol.PRandom(male_agent, fem_agent, world)
+
+    #print("World: ", world[0, 1, 1])  # zyx
+
+
+    '''Layer_1 = [[-1, -1, -1], [-1, 'P', -1], ['D', 'R', -1]]
+    Layer_2 = [['D', -1, -1], [-1, 'R', -1], [-1, -1, 'P']]
+    Layer_3 = [['D', -1, -1], [-1, -1, -1], [-1, 'D', -1]]
+
+    #D: drop-off, P: pick-up, R: risky
+
+    Layer_1 = np.array(Layer_1).reshape((3,3))
+    Layer_2 = np.array(Layer_2).reshape((3,3))
+    Layer_3 = np.array(Layer_3).reshape((3,3))
+    print(Layer_1)
+    print(Layer_2)
+    print(Layer_3)'''
+
+
+    # Manhattan distance formula:
+    # d = |x1 - x2| + |y1 - y2|
+    # Luckily, scipy has a library to compute the City Block (Manhattan) distance.
+    # manhat_distance = cityblock(fem_agent.current_pos, male_agent.current_pos)
+    # print('Manhattan Distance between', fem_agent.current_pos, 'and', male_agent.current_pos, 'is', manhat_distance)
+
+    # numSteps = 10000
+
+    # q = Qtable()
+    # print("Number of steps till finished: ", q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, numSteps))
+    # print("Male agent position: ", male_agent.current_pos," Female agent position: ", fem_agent.current_pos)
+if __name__ == "__main__":
+
+    main()

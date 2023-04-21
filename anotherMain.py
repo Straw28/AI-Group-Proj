@@ -169,9 +169,9 @@ class Action:
         # printWorld()
 
         agent.reward += agentreward
+
+
 # Module: isValid --> checks if a move is valid or not
-
-
 class isValid:
     # checks for out of bounds & checks for if two agents are in the same block returns an array with valid moves
     # this function tells us what direction the agent is currently able to take
@@ -249,7 +249,7 @@ class DropOff(Cell):
 
 
 class Risky(Cell):
-    def __init__(self, num_blocks, location, is_out, reward):
+    def __init__(self, num_blocks, location, reward):
         # inherits parent properties
         super().__init__(num_blocks, location, is_out)
         # -2 points is a constant
@@ -423,8 +423,6 @@ def main():
 
     print("Reward Male agent: ", male_agent.reward)
     # print("World: ", world[0, 1, 1])  # zyx
-
-    # pick up: +14, drop off: +14, risky: -2, path: -1
 
     # Manhattan distance formula:
     # d = |x1 - x2| + |y1 - y2|

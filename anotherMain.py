@@ -17,35 +17,35 @@ world = np.array(world)
 class Reward:
 # Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
 
-    def canPickUp(self, futureAgent, currentAgent, world):
+    def canPickUp(self, future_agent, currentAgent, world):
         if currentAgent.have_block == False:
-            if futureAgent.current_pos == (2, 2, 1) and world[0, 1, 1] > 0:
+            if future_agent.current_pos == (2, 2, 1) and world[0, 1, 1] > 0:
                 return True
-            elif futureAgent.current_pos == (3, 3, 2) and world[1, 2, 2] > 0:
+            elif future_agent.current_pos == (3, 3, 2) and world[1, 2, 2] > 0:
                 return True
         return False
 
-    def canDropOff(self, futureAgent, currentAgent, world):
+    def canDropOff(self, future_agent, currentAgent, world):
         if currentAgent.have_block == True:
-            if futureAgent.current_pos == (1, 1, 2) and world[1, 0, 0] > 0:
+            if future_agent.current_pos == (1, 1, 2) and world[1, 0, 0] > 0:
                 return True
-            elif futureAgent.current_pos == (1, 1, 3) and world[2, 0, 0] > 0:
+            elif future_agent.current_pos == (1, 1, 3) and world[2, 0, 0] > 0:
                 return True
-            elif futureAgent.current_pos == (3, 1, 1) and world[0, 0, 2] > 0:
+            elif future_agent.current_pos == (3, 1, 1) and world[0, 0, 2] > 0:
                 return True
-            elif futureAgent.current_pos == (3, 2, 3) and world[2, 1, 2] > 0:
+            elif future_agent.current_pos == (3, 2, 3) and world[2, 1, 2] > 0:
                 return True
         return False
 
-    def isRisky(self, futureAgent):
-        if futureAgent.current_pos == (2, 2, 2) or futureAgent.current_pos == (3, 2, 1):
+    def isRisky(self, future_agent):
+        if future_agent.current_pos == (2, 2, 2) or future_agent.current_pos == (3, 2, 1):
             return True
         return False
 
-    def rewardReturn(self, futureAgent,currentAgent, world):
-        if self.canPickUp(futureAgent,  currentAgent, world) or self.canDropOff(futureAgent, currentAgent, world):
+    def rewardReturn(self, future_agent,currentAgent, world):
+        if self.canPickUp(future_agent,  currentAgent, world) or self.canDropOff(future_agent, currentAgent, world):
             return 14
-        elif self.isRisky(futureAgent):
+        elif self.isRisky(future_agent):
             return -2
         else:
             return -1
@@ -57,12 +57,12 @@ class Action:
 
     def takeDirection(self, agent, agent2, world, direction):
         agent_reward = 0
-        oldAgent = agent
+        old_agent = agent
         if direction == 0:
             agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
             # print("this is the agent positions after: ", agent.current_pos)
             # should we check this here? does it check if it has a block or not?
-            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
             # reward returns 14 if you're able to pickup or drop off successfully
             if agent_reward == 14: 
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
@@ -73,8 +73,9 @@ class Action:
                 agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
             print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
-            if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
+            agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
+            # reward returns 14 if you're able to pickup or drop off successfully
+            if agent_reward == 14:  
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
 
@@ -83,7 +84,7 @@ class Action:
                 agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
             if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
@@ -93,7 +94,7 @@ class Action:
                 agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
             if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
@@ -103,7 +104,7 @@ class Action:
                 agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
             if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
@@ -113,13 +114,13 @@ class Action:
                 agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
             # print("this is the agent positions after: ", agent.current_pos)
             # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
-            agent_reward = self.rewards.rewardReturn(agent, oldAgent, world)
+            agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
             if agent_reward == 14:  # reward returns 14 if you're able to pickup or drop off successfully
                 world[agent.current_pos[2]][agent.current_pos[1]][agent.current_pos[0]] -= 1
             agent2.other_pos = agent.current_pos
 
 
-# Module: isValid --> checks if a move is valid or not
+# Checks if a move is valid or not
 class isValid:
     # checks for out of bounds & checks for if two agents are in the same block returns an array with valid moves
     # this function tells us what direction the agent is currently able to take
@@ -274,19 +275,18 @@ class Policy:
     rewards = Reward()
     # pickups = PickUp()
     # dropoffs = DropOff()
-   # rewards = Reward(agent, action, agent, pickups, dropoffs)
     
  
-  # PRandom --> it checks if pickup or drop off is possible in the current state. If it's not then
+  # Checks if pick up or drop off is possible in the current state.
     def PRandom(self, agent, agent2, world):  # 0 0 0
         directions = self.is_it_valid.directionParser(agent)
         for direction in directions:  # this is to check if there is a pick up or drop off available
-            futureAgent = agent
-            self.myaction.takeDirection(futureAgent, agent2, world, direction)
-            # print(f"Here's the agents new position: {futureAgent.current_pos}")
-            if self.rewards.rewardReturn(futureAgent,agent, world) > 0:
+            future_agent = agent
+            self.myaction.takeDirection(future_agent, agent2, world, direction)
+            # print(f"Here's the agents new position: {future_agent.current_pos}")
+            if self.rewards.rewardReturn(future_agent,agent, world) > 0:
                 print("I found a reward")
-                agent = futureAgent
+                agent = future_agent
                 return
         #print("this is the agent positions before: ", agent.current_pos)
         r = np.random.choice(directions)
@@ -296,9 +296,9 @@ class Policy:
 
     def PGreedy(self, agent, agent2, world):
         directions = self.is_it_valid.directionParser(agent)
-        futureAgent = agent
-        self.myaction.takeDirection(futureAgent, agent2, world, direction)
-        if self.rewards.rewardReturn(futureAgent, agent, world) > 0:
+        future_agent = agent
+        self.myaction.takeDirection(future_agent, agent2, world, direction)
+        if self.rewards.rewardReturn(future_agent, agent, world) > 0:
           print("I found a reward")
           return
 
@@ -311,7 +311,7 @@ class Policy:
     #       return
 
 
-#higher q the better?
+# the higher the q-value the better
         finished = True
         for d in dropoffArray:
             if world[d] > 0:
@@ -319,86 +319,82 @@ class Policy:
                 break
         if finished:
             return i
-
-        # dropoff1 = DropOff(0, (0, 0, 2), 14)
-        # dropoff2 = DropOff(0, (2, 1, 2), 14)
-        # dropoff3 = DropOff(0, (0, 0, 1), 14)
-        # dropoff4 = DropOff(0, (2, 0, 0), 14)
-
         return num_steps
 
+def main():
 
-var_alpha = 0.3
-var_lambda = 0.5
+    var_alpha = 0.3
+    var_lambda = 0.5
 
-# initialized agents
-# her position, his position, reward, have_block
-fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0)
-male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
-# cells
-#ZYX b/c we use pickup and drop off array for the world not the agent. agent is stored as ZYX
-pickup1 = (0, 1, 1)
-pickup2 = (1, 2, 2)
-pickupArray = [pickup1, pickup2]
+    # initialized agents: her position, his position, reward, have_block
+    fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0)
+    male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
+    
+    # cells: ZYX-oriented b/c we use pickup and drop off array for the world not the agent. The agent is stored as XYZ
+    pickup1 = (0, 1, 1)
+    pickup2 = (1, 2, 2)
+    pickupArray = [pickup1, pickup2]
 
-dropoff1 = (1,0,0)
-dropoff2 = (2,0,0)
-dropoff3 = (0,0,2)
-dropoff4 = (2,1,2)
-dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
+    dropoff1 = (1,0,0)
+    dropoff2 = (2,0,0)
+    dropoff3 = (0,0,2)
+    dropoff4 = (2,1,2)
+    dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
 
-
-# risky:(2,2,2),(3,2,1)
-
-# our Q-table, initialized to 0 on purpose
-# Q-table has states as rows and acions/operators as columns
-
-# q_table = np.zeros((3, 3), dtype=int, order='C')
-# print("Q-Table")
-# print(q_table)
-
-q = Qtable()
-num_steps = 1000
-a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
-print("Q-Table")
-print(a)
-
-for a in range(len(q.Qtable)):
-    for b in range(len(q.Qtable[a])):
-        for c in range(len(q.Qtable[a][b])):
-            for d in range(len(q.Qtable[a][b][c])):
-                for e in range(len(q.Qtable[a][b][c][d])):
-                    print("Q value at 0: ", q.Qtable[a][b][c][d][e])
-
-pol = Policy()
-pol.PRandom(male_agent, fem_agent, world)
-
-#print("World: ", world[0, 1, 1])  # zyx
-
-# pick up: +14, drop off: +14, risky: -2, path: -1
-
-'''Layer_1 = [[-1, -1, -1], [-1, 'P', -1], ['D', 'R', -1]]
-Layer_2 = [['D', -1, -1], [-1, 'R', -1], [-1, -1, 'P']]
-Layer_3 = [['D', -1, -1], [-1, -1, -1], [-1, 'D', -1]]
-
-#D: drop-off, P: pick-up, R: risky
-
-Layer_1 = np.array(Layer_1).reshape((3,3))
-Layer_2 = np.array(Layer_2).reshape((3,3))
-Layer_3 = np.array(Layer_3).reshape((3,3))
-print(Layer_1)
-print(Layer_2)
-print(Layer_3)'''
+    # risky:(1,1,1),(0,1,2)
 
 
-# Manhattan distance formula:
-# d = |x1 - x2| + |y1 - y2|
-# Luckily, scipy has a library to compute the City Block (Manhattan) distance.
-# manhat_distance = cityblock(fem_agent.current_pos, male_agent.current_pos)
-# print('Manhattan Distance between', fem_agent.current_pos, 'and', male_agent.current_pos, 'is', manhat_distance)
+    # our Q-table, initialized to 0 on purpose
+    # Q-table has states as rows and acions/operators as columns
 
-# numSteps = 10000
+    # q_table = np.zeros((3, 3), dtype=int, order='C')
+    # print("Q-Table")
+    # print(q_table)
 
-# q = Qtable()
-# print("Number of steps till finished: ", q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, numSteps))
-# print("Male agent position: ", male_agent.current_pos," Female agent position: ", fem_agent.current_pos)
+    q = Qtable()
+    num_steps = 1000
+    a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+    print("Q-Table")
+    print(a)
+
+    for a in range(len(q.Qtable)):
+        for b in range(len(q.Qtable[a])):
+            for c in range(len(q.Qtable[a][b])):
+                for d in range(len(q.Qtable[a][b][c])):
+                    for e in range(len(q.Qtable[a][b][c][d])):
+                        print("Q value at 0: ", q.Qtable[a][b][c][d][e])
+
+    pol = Policy()
+    pol.PRandom(male_agent, fem_agent, world)
+
+    #print("World: ", world[0, 1, 1])  # zyx
+
+
+    '''Layer_1 = [[-1, -1, -1], [-1, 'P', -1], ['D', 'R', -1]]
+    Layer_2 = [['D', -1, -1], [-1, 'R', -1], [-1, -1, 'P']]
+    Layer_3 = [['D', -1, -1], [-1, -1, -1], [-1, 'D', -1]]
+
+    #D: drop-off, P: pick-up, R: risky
+
+    Layer_1 = np.array(Layer_1).reshape((3,3))
+    Layer_2 = np.array(Layer_2).reshape((3,3))
+    Layer_3 = np.array(Layer_3).reshape((3,3))
+    print(Layer_1)
+    print(Layer_2)
+    print(Layer_3)'''
+
+
+    # Manhattan distance formula:
+    # d = |x1 - x2| + |y1 - y2|
+    # Luckily, scipy has a library to compute the City Block (Manhattan) distance.
+    # manhat_distance = cityblock(fem_agent.current_pos, male_agent.current_pos)
+    # print('Manhattan Distance between', fem_agent.current_pos, 'and', male_agent.current_pos, 'is', manhat_distance)
+
+    # numSteps = 10000
+
+    # q = Qtable()
+    # print("Number of steps till finished: ", q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, numSteps))
+    # print("Male agent position: ", male_agent.current_pos," Female agent position: ", fem_agent.current_pos)
+if __name__ == "__main__":
+
+    main()

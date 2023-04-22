@@ -33,7 +33,6 @@ def printQTable(q):
                     print(f"Q value at ({a}, {b}, {c}, {d}): {has_block}")
 
 def printWorld(agent_m, agent_f):
-
     for i in range(world.shape[0]):
         print("Layer", i+1, ":")
         for j in range(world.shape[1]):
@@ -47,16 +46,6 @@ def printWorld(agent_m, agent_f):
             print()
         print()
 
-# def printWorld():
-
-#     for i in range(world.shape[0]):
-#         print("Layer", i+1, ":")
-#         for j in range(world.shape[1]):
-#             for k in range(world.shape[2]):
-#                 print(world[i][j][k], end=" ")
-#             print()
-#         print()
-
 # don't need a state class bc everything is in agent or cells
 class Agent:
     def __init__(self, current_pos, other_pos, reward, have_block):
@@ -68,51 +57,6 @@ class Agent:
         # integer
         self.have_block = have_block
 
-# parent class
-
-
-class Cell:
-    def __init__(self, num_blocks, location, reward=-1):
-        self.num_blocks = num_blocks
-        # location is a tuple of 3 ints
-        self.location = location
-        # reward is, by default, -1 for regular cells
-        self.reward = reward
-        # boolean to check if an operator is out of bounds
-        # def is_out_bounds(location):
-        #   if (location != )
-
-
-# Pickup and DropOff are children classes of the Cell parent class
-class PickUp(Cell):
-    def __init__(self, num_blocks, location, reward):
-        # super() automatically inherit the methods and properties from its parent
-        super().__init__(num_blocks, location)
-        # remaining
-        # 14 points is a constant
-        self.reward = 14
-
-    def is_valid(num_blocks):
-        return num_blocks != 0
-
-
-class DropOff(Cell):
-    def __init__(self, num_blocks, location, reward):
-        # inherits parent properties
-        super().__init__(num_blocks, location)
-        self.reward = 14  # 14 points is a constant
-        # capacity
-
-    def is_valid(num_blocks):
-        return num_blocks != 5
-
-
-class Risky(Cell):
-    def __init__(self, num_blocks, location, is_out, reward):
-        # inherits parent properties
-        super().__init__(num_blocks, location, is_out)
-        # -2 points is a constant
-        self.reward = -2
 
 class Reward:
     # actions = Action
@@ -153,21 +97,17 @@ class Action:
         if direction == 0:
             agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
-            # reward returns 14 if you're able to pickup or drop off successfully
             if agent_reward == 14:
                 if self.rewards.canPickUp(agent, old_agent, world):
                     agent.have_block = 1
                 elif self.rewards.canDropOff(agent, old_agent, world):
                     agent.have_block = 0
                 world[agent.current_pos] -= 1
-                #printWorld()
             agent2.other_pos = agent.current_pos
 
         elif direction == 1:
             agent.current_pos = (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
-            #print("reward: ", agent_reward)
-            # reward returns 14 if you're able to pickup or drop off successfully
             if agent_reward == 14:
                 if self.rewards.canPickUp(agent, old_agent, world):
                     agent.have_block = 1
@@ -178,8 +118,6 @@ class Action:
 
         elif direction == 2:
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
-            # print("this is the agent positions after: ", agent.current_pos)
-            # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
             if agent_reward == 14:
                 if self.rewards.canPickUp(agent, old_agent, world):
@@ -192,8 +130,6 @@ class Action:
         elif direction == 3:
             agent.current_pos = (
                 agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
-            # print("this is the agent positions after: ", agent.current_pos)
-            # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
             if agent_reward == 14:
                 if self.rewards.canPickUp(agent, old_agent, world):
@@ -206,8 +142,6 @@ class Action:
         elif direction == 4:
             agent.current_pos = (
                 agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
-            # print("this is the agent positions after: ", agent.current_pos)
-            # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
             if agent_reward == 14:
                 if self.rewards.canPickUp(agent, old_agent, world):
@@ -220,8 +154,6 @@ class Action:
         elif direction == 5:
             agent.current_pos = (
                 agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
-            # print("this is the agent positions after: ", agent.current_pos)
-            # agent.reward += world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]]
             agent_reward = self.rewards.rewardReturn(agent, old_agent, world)
             if agent_reward == 14:
                 if self.rewards.canPickUp(agent, old_agent, world):
@@ -232,7 +164,8 @@ class Action:
             agent2.other_pos = agent.current_pos
         
         agent.reward += agent_reward 
-        #print("rewardcheck: ", agent.reward)
+
+
 # Checks if a move is valid or not
 class isValid:
     # checks for out of bounds & checks for if two agents are in the same block returns an array with valid moves
@@ -274,6 +207,15 @@ class Qtable:
         rewards = Reward()
 
         for i in range(num_steps):
+            finished = True
+            for d in dropoffArray:
+                if world[d] > 0:
+                    finished = False
+                    break
+            if finished:
+                print ("Done!")
+                return i
+            
             old_state_m = m_agent.current_pos
             old_state_f = f_agent.current_pos  # <--- memorize what the past
             old_m = m_agent
@@ -330,15 +272,9 @@ class Qtable:
                 self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] = self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha * (
                     rewards.rewardReturn(f_agent, old_f, world) + var_gamma * max(f_future_directions_qvalue) - self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
 
-    # the higher the q-value the better
-        finished = True
-        for d in dropoffArray:
-            if world[d] > 0:
-                finished = False
-                break
-        if finished:
+        if i == num_steps - 1:
             return i
-        return num_steps
+
 
 
     def SARSA(self, m_agent, f_agent, world, var_gamma, var_alpha, num_steps):
@@ -346,8 +282,14 @@ class Qtable:
         a = isValid()
         rewards = Reward()
         
-        
         for i in range(num_steps):  # <--- here we iterate through the number of steps per experitment
+            finished = True
+            for d in dropoffArray:
+                if world[d] > 0:
+                    finished = False
+                    break
+                if finished:
+                    return i
             old_state_m = m_agent.current_pos
             old_state_f = f_agent.current_pos  # <--- memorize what the past
             old_m = m_agent
@@ -394,15 +336,10 @@ class Qtable:
                 self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] = self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f] + var_alpha*(world[old_state_f[0]][old_state_f[1]][old_state_f[2]] + var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] - self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f])
             elif f_agent.have_block == 1:
                 self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] = self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha*(world[old_state_f[0]][old_state_f[1]][old_state_f[2]] + var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] - self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
-
-        finished = True
-        for d in dropoffArray:
-            if world[d] > 0:
-                finished = False
-                break
-        if finished:
+        
+        if i == num_steps - 1:
             return i
-        return num_steps
+
 
 class Policy:  
     q = Qtable()
@@ -488,8 +425,8 @@ def main():
    
     printWorld(male_agent, fem_agent)
     q = Qtable()
-    num_steps = 200
-    a = q.SARSA(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+    num_steps = 1000
+    a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
     
     print("Q-Table")
     printQTable(q)

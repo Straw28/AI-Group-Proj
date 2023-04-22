@@ -207,15 +207,7 @@ class Qtable:
         rewards = Reward()
 
         for i in range(num_steps):
-            finished = True
-            for d in dropoffArray:
-                if world[d] > 0:
-                    finished = False
-                    break
-            if finished:
-                print ("Done!")
-                return i
-            
+             
             old_state_m = m_agent.current_pos
             old_state_f = f_agent.current_pos  # <--- memorize what the past
             old_m = m_agent
@@ -271,7 +263,16 @@ class Qtable:
             elif f_agent.have_block == 1:
                 self.Qtable[new_state_f][1][f] = self.Qtable[old_state_f][1][f] + var_alpha * (
                     rewards.rewardReturn(f_agent, old_f, world) + var_gamma * max(f_future_directions_qvalue) - self.Qtable[old_state_f][1][f])
-
+        
+        finished = True
+        for d in dropoffArray:
+            if world[d] > 0:
+                finished = False
+                break
+        if finished:
+            print ("Done!")
+            return i
+        
         if i == num_steps - 1:
             return i
 
@@ -288,8 +289,8 @@ class Qtable:
                 if world[d] > 0:
                     finished = False
                     break
-                if finished:
-                    return i
+            if finished:
+                return i
         
             old_m = Agent(m_agent.current_pos, m_agent.other_pos, m_agent.reward, m_agent.have_block)
             old_f = Agent(f_agent.current_pos, f_agent.other_pos, f_agent.reward, f_agent.have_block)
@@ -429,8 +430,8 @@ def main():
     printWorld(male_agent, fem_agent)
     q = Qtable()
     num_steps = 1000
-    #a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
-    b = q.SARSA(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+    a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+    #b = q.SARSA(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
     
     print("Q-Table")
     printQTable(q)
@@ -438,7 +439,7 @@ def main():
    
     print("Male agent reward: ", male_agent.reward, " Female agent reward: ", fem_agent.reward)
     #"number of steps", a)
-    print("number steps ", b)
+    print("number steps ", a)
    
 
 if __name__ == "__main__":

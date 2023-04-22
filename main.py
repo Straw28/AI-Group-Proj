@@ -24,33 +24,61 @@ class State:
 
 # Module: Policy class
 class Policy:
-    def directionParser(self, agent):  # this function tells us what direction the agent is currently able to take
+    def directionParser(self, agent, pickupArray, dropoffArray):  # this function tells us what direction the agent is currently able to take
         dirArray = [0, 1, 2, 3, 4, 5]
         # [up, down, north, south, east, west]
-
-        if agent.current_pos[0] - 1 < 0 or (
-        agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos:
+        if (agent.current_pos[0] - 1 < 0 or (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos):
             dirArray.remove(0)  # up
-        if agent.current_pos[0] + 1 > 2 or (
-        agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos:
+        if (agent.current_pos[0] + 1 > 2 or (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos):
             dirArray.remove(1)  # down
-        if agent.current_pos[1] - 1 < 0 or (
-        agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2]) == agent.other_pos:
+        if (agent.current_pos[1] - 1 < 0 or (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2]) == agent.other_pos):
             dirArray.remove(2)  # north
-        if agent.current_pos[1] + 1 > 2 or (
-        agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2]) == agent.other_pos:
+        if (agent.current_pos[1] + 1 > 2 or (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2]) == agent.other_pos):
             dirArray.remove(3)  # south
-        if agent.current_pos[2] + 1 > 2 or (
-        agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1) == agent.other_pos:
+        if (agent.current_pos[2] + 1 > 2 or (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1) == agent.other_pos):
             dirArray.remove(4)  # east
-        if agent.current_pos[2] - 1 < 0 or (
-        agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1) == agent.other_pos:
+        if (agent.current_pos[2] - 1 < 0 or (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1) == agent.other_pos):
             dirArray.remove(5)  # west
+
+        # if agent.have_block == 0:
+        #     self.dropOffDeleter(agent, dirArray, dropoffArray)
+        # else:
+        #     self.pickupDeleter(agent, dirArray, pickupArray)
 
         return dirArray
 
+    # def pickupDeleter(self, agent, dirArray, pickupArray):
+    #     for p in pickupArray:
+    #         if (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2]) == p.location and (0 in dirArray):
+    #             dirArray.remove(0)  # up
+    #         if (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2]) == p.location and (1 in dirArray):
+    #             dirArray.remove(1)  # down
+    #         if (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2]) == p.location and (2 in dirArray):
+    #             dirArray.remove(2)  # north
+    #         if (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2]) == p.location and (3 in dirArray):
+    #             dirArray.remove(3)  # south
+    #         if (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1) == p.location and (4 in dirArray):
+    #             dirArray.remove(4)  # east
+    #         if (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1) == p.location and (5 in dirArray):
+    #             dirArray.remove(5)  # west
+    #
+    # def dropOffDeleter(self, agent, dirArray, dropoffArray):
+    #     for p in dropoffArray:
+    #         if (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2]) == p.location and (0 in dirArray):
+    #             dirArray.remove(0)  # up
+    #         if (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2]) == p.location and (1 in dirArray):
+    #             dirArray.remove(1)  # down
+    #         if (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2]) == p.location and (2 in dirArray):
+    #             dirArray.remove(2)  # north
+    #         if (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2]) == p.location and (3 in dirArray):
+    #             dirArray.remove(3)  # south
+    #         if (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1) == p.location and (4 in dirArray):
+    #             dirArray.remove(4)  # east
+    #         if (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1) == p.location and (5 in dirArray):
+    #             dirArray.remove(5)  # west
+
     def pickUpAndDropOffCheck(self, agent, agent2, direction, pickupArray, dropoffArray):
-        # this function checks if there is a pick up/drop off on the location that we might go to
+        # this function checks if there is a pickup/drop off on the location that we might go to
         if direction == 0:  # up
             if agent.have_block == 0:
                 for p in pickupArray:
@@ -199,7 +227,8 @@ class Policy:
             agent2.other_pos = agent.current_pos
 
     def PRandom(self, agent, agent2, world, pickupArray, dropoffArray):
-        directions = self.directionParser(agent)
+        directions = self.directionParser(agent, pickupArray, dropoffArray)
+        print("This are the directions: ", directions)
         for direction in directions:  # this is to check if there is a pick up or drop off available
             if self.pickUpAndDropOffCheck(agent, agent2, direction, pickupArray, dropoffArray) != -1:
                 return
@@ -207,66 +236,79 @@ class Policy:
         self.takeDirection(agent, agent2, world, r)
 
     def PGreedy(self, agent, agent2, world, pickupArray, dropoffArray):
-        directions = self.directionParser(agent)
-        print("This are the directions: ", directions)
+        directions = self.directionParser(agent, pickupArray, dropoffArray)
         for direction in directions:  # this is to check if there is a pick up or drop off available
             if self.pickUpAndDropOffCheck(agent, agent2, direction, pickupArray, dropoffArray) != -1:
-                print("I found a reward")
                 return
+
+        directionsQvalues = dict()
+        state = agent.current_pos
+        for direction in directions:
+            if agent.have_block == 0:
+                directionsQvalues[direction] = q.Qtable[state[0]][state[1]][state[2]][0][direction]
+            elif agent.have_block == 1:
+                directionsQvalues[direction] = q.Qtable[state[0]][state[1]][state[2]][1][direction]
+
+        maxdirection = max(directionsQvalues, key = directionsQvalues.get)
+        self.takeDirection(agent, agent2, world, maxdirection)
 
     def PExploit(self, agent, agent2, world, pickupArray, dropoffArray):
-        directions = self.directionParser(agent)
-        print("This are the directions: ", directions)
+        directions = self.directionParser(agent, pickupArray, dropoffArray)
         for direction in directions:  # this is to check if there is a pick up or drop off available
             if self.pickUpAndDropOffCheck(agent, agent2, direction, pickupArray, dropoffArray) != -1:
-                print("I found a reward")
                 return
 
-#Module: Reward Class
-class Reward:  #Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
- 
-  def __init__(self, futureAgent, action, currentAgent, pickUpCell, dropOffCell):
-    # future state (stored within agent)
-    self.futureAgent = futureAgent
-    # action integer value of moving (up, down, east, west, north, south)
-    self.action = action
-    # current state (stored within agent)
-    self.currentAgent = currentAgent
-    
-    # adding pickup/dropoff cells to keep track of the number of blocks
-    self.pickUpCell = pickUpCell
-    self.dropOffCell = dropOffCell
+        if np.random() <= .80:
+            self.PGreedy(agent, agent2, world, pickupArray, dropoffArray)
+        else:
+            self.PRandom(agent, agent2, world, pickupArray, dropoffArray)
 
-  # returns a bool, checks if the agent is in a pickup cell & does not have a block
-  def canPickUp(self): 
-    if self.currentAgent.have_block == False:
-      if self.futureAgent.current_pos == (2, 2, 1) or self.futureAgent.current_pos == (3, 3, 2):
-        if self.pickUpCell.is_valid():
-          return True
-    return False
 
-  # returns a bool, checks if agent is in a drop off cell and has a block
-  def canDropOff(self):
-    if self.currentAgent.have_block == True: #FIXME also gotta keep track of if the drop offs are full or not
-      if self.futureAgent.current_pos == (1, 1, 2) or self.futureAgent.current_pos == (1, 1, 3) or self.futureAgent.current_pos == (3, 1, 1) or self.futureAgent.current_pos == (3, 2, 3):
-        if self.dropOffCell.is_valid():
-          return True
-    return False
+# Module: Reward Class
+class Reward:  # Maps each state-action pair to a numerical reward signal, which the agent uses to update its policy and improve its decision-making over time.
+    def __init__(self, futureAgent, action, currentAgent, pickUpCell, dropOffCell):
+        # future state (stored within agent)
+        self.futureAgent = futureAgent
+        # action integer value of moving (up, down, east, west, north, south)
+        self.action = action
+        # current state (stored within agent)
+        self.currentAgent = currentAgent
 
-  # returns a bool, checks if agent is in a risky cell
-  def isRisky(self):
-    if self.futureAgent.current_pos == (2, 2, 2) or self.futureAgent.current_pos == (3, 2, 1):
-      return True
-    return False
+        # adding pickup/dropoff cells to keep track of the number of blocks
+        self.pickUpCell = pickUpCell
+        self.dropOffCell = dropOffCell
 
-  # returns an integer value of the reward
-  def rewardReturn(self): 
-    if self.canPickUp() or self.canDropOff():
-      return 14
-    elif self.isRisky():
-      return -2
-    else:
-      return -1
+    # returns a bool, checks if the agent is in a pickup cell & does not have a block
+    def canPickUp(self):
+        if self.currentAgent.have_block == False:
+            if self.futureAgent.current_pos == (2, 2, 1) or self.futureAgent.current_pos == (3, 3, 2):
+                if self.pickUpCell.is_valid():
+                    return True
+        return False
+
+    # returns a bool, checks if agent is in a drop off cell and has a block
+    def canDropOff(self):
+        if self.currentAgent.have_block == True:  # FIXME also gotta keep track of if the drop offs are full or not
+            if self.futureAgent.current_pos == (1, 1, 2) or self.futureAgent.current_pos == (
+            1, 1, 3) or self.futureAgent.current_pos == (3, 1, 1) or self.futureAgent.current_pos == (3, 2, 3):
+                if self.dropOffCell.is_valid():
+                    return True
+        return False
+
+    # returns a bool, checks if agent is in a risky cell
+    def isRisky(self):
+        if self.futureAgent.current_pos == (2, 2, 2) or self.futureAgent.current_pos == (3, 2, 1):
+            return True
+        return False
+
+    # returns an integer value of the reward
+    def rewardReturn(self):
+        if self.canPickUp() or self.canDropOff():
+            return 14
+        elif self.isRisky():
+            return -2
+        else:
+            return -1
 
 
 # don't need a state class bc everything is in agent or cells
@@ -341,15 +383,21 @@ class Qtable:
         for i in range(num_steps):  # <--- here we iterate through the number of steps per experitment
             old_state_m = m_agent.current_pos
             old_state_f = f_agent.current_pos  # <--- memorize what the past
+            print("This is the  prev direction the m agent took: ", old_state_m, "Does it have a block: ", m_agent.have_block)
+            print("This is the  prev direction the f agent took: ", old_state_f, "Does it have a block: ", f_agent.have_block)
 
-            m = p.PRandom(m_agent, f_agent, world, pickupArray, dropoffArray)  # running the policy for the male agent
-            f = p.PRandom(f_agent, m_agent, world, pickupArray, dropoffArray)  # running the policy for the female agent
+            if i < 500:
+                m = p.PRandom(m_agent, f_agent, world, pickupArray, dropoffArray)  # running the policy for the male agent
+                f = p.PRandom(f_agent, m_agent, world, pickupArray, dropoffArray)  # running the policy for the female agent
+            else:
+                m = p.PExploit(m_agent, f_agent, world, pickupArray, dropoffArray)
+                f = p.PExploit(f_agent, m_agent, world, pickupArray, dropoffArray)
             # remember I update the rewards, have block(for agents), num_blocks(for pickup/dropoff) and positions in the policy so no need to do in this function
 
             new_state_m = m_agent.current_pos
             new_state_f = f_agent.current_pos
 
-            m_future_directions = p.directionParser(m_agent)
+            m_future_directions = p.directionParser(m_agent, pickupArray, dropoffArray)
             m_future_directions_qvalue = []
             for direction in m_future_directions:
                 if m_agent.have_block == 0:
@@ -357,7 +405,7 @@ class Qtable:
                 elif m_agent.have_block == 1:
                     m_future_directions_qvalue.append(q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][direction])
 
-            f_future_directions = p.directionParser(f_agent)
+            f_future_directions = p.directionParser(f_agent, pickupArray, dropoffArray)
             f_future_directions_qvalue = []
             for direction in f_future_directions:
                 if f_agent.have_block == 0:
@@ -366,23 +414,82 @@ class Qtable:
                     f_future_directions_qvalue.append(q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][direction])
 
             if m_agent.have_block == 0:
-                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] = q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha * (world[new_state_m[0]][new_state_m[1]][new_state_m[2]] + var_gamma * max(m_future_directions_qvalue) - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m])
+                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] += q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha * (world[new_state_m[0]][new_state_m[1]][new_state_m[2]] + var_gamma * max(m_future_directions_qvalue) - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m])
             elif m_agent.have_block == 1:
-                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] = q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m] + var_alpha * (world[new_state_m[0]][new_state_m[1]][new_state_m[2]] + var_gamma * max(m_future_directions_qvalue) - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m])
+                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] += q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m] + var_alpha * (world[new_state_m[0]][new_state_m[1]][new_state_m[2]] + var_gamma * max(m_future_directions_qvalue) - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m])
 
             # go to the beginning of the qtable class
             if f_agent.have_block == 0:
-                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f] + var_alpha * (world[new_state_f[0]][new_state_f[1]][new_state_f[2]] + var_gamma * max( f_future_directions_qvalue) - q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f])
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] += q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f] + var_alpha * (world[new_state_f[0]][new_state_f[1]][new_state_f[2]] + var_gamma * max( f_future_directions_qvalue) - q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f])
             elif f_agent.have_block == 1:
-                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha * (world[new_state_f[0]][new_state_f[1]][new_state_f[2]] + var_gamma * max(f_future_directions_qvalue) - q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] += q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha * (world[new_state_f[0]][new_state_f[1]][new_state_f[2]] + var_gamma * max(f_future_directions_qvalue) - q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
 
         finished = True
         for d in dropoffArray:
-            if d.is_valid():
+            if d.num_blocks < 5:
                 finished = False
                 break
         if finished:
             return i
+
+        return num_steps
+
+    def SARSA(self, m_agent, f_agent, world, var_gamma, var_alpha, num_steps, pickupArray, dropoffArray):
+        p = Policy()  # <--- This lets us access the policies
+        q = Qtable()  # <--- This lets us access the qtable
+        for i in range(num_steps):  # <--- here we iterate through the number of steps per experitment
+            old_state_m = m_agent.current_pos
+            old_state_f = f_agent.current_pos  # <--- memorize what the past
+            print("This is the  prev direction the m agent took: ", old_state_m, "Does it have a block: ",
+                  m_agent.have_block)
+            print("This is the  prev direction the f agent took: ", old_state_f, "Does it have a block: ",
+                  f_agent.have_block)
+
+            if i < 500:
+                m = p.PRandom(m_agent, f_agent, world, pickupArray, dropoffArray)  # running the policy for the male agent
+                f = p.PRandom(f_agent, m_agent, world, pickupArray, dropoffArray)  # running the policy for the female agent
+            else:
+                m = p.PExploit(m_agent, f_agent, world, pickupArray, dropoffArray)
+                f = p.PExploit(f_agent, m_agent, world, pickupArray, dropoffArray)
+            # remember I update the rewards, have block(for agents), num_blocks(for pickup/dropoff) and positions in the policy so no need to do in this function
+
+            new_state_m = m_agent.current_pos
+            new_state_f = f_agent.current_pos
+
+            m_future_directions = p.directionParser(m_agent, pickupArray, dropoffArray)
+            m_future_directions_qvalue = []
+            for direction in m_future_directions:
+                if m_agent.have_block == 0:
+                    m_future_directions_qvalue.append(q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][direction])
+                elif m_agent.have_block == 1:
+                    m_future_directions_qvalue.append(q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][direction])
+
+            f_future_directions = p.directionParser(f_agent, pickupArray, dropoffArray)
+            f_future_directions_qvalue = []
+            for direction in f_future_directions:
+                if f_agent.have_block == 0:
+                    f_future_directions_qvalue.append(q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][direction])
+                elif f_agent.have_block == 1:
+                    f_future_directions_qvalue.append(q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][direction])
+
+            if m_agent.have_block == 0:
+                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] += q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha*(world[old_state_m[0]][old_state_m[1]][old_state_m[2]] + var_gamma*q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m])
+            elif m_agent.have_block == 1:
+                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] += q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m] + var_alpha*(world[old_state_m[0]][old_state_m[1]][old_state_m[2]] + var_gamma*q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m])
+
+            # go to the beginning of the qtable class
+            if f_agent.have_block == 0:
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f] + var_alpha*(world[old_state_f[0]][old_state_f[1]][old_state_f[2]] + var_gamma*q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] - q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f])
+            elif f_agent.have_block == 1:
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha*(world[old_state_f[0]][old_state_f[1]][old_state_f[2]] + var_gamma*q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] - q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
+
+            finished = True
+            for d in dropoffArray:
+                if d.num_blocks < 5:
+                    finished = False
+                    break
+            if finished:
+                return i
 
         return num_steps
 
@@ -402,7 +509,7 @@ dropoff4 = DropOff(0, (2, 0, 0), 14)
 
 pickupArray = [pickup1, pickup2]
 dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
-# Note that he indexes at one 
+# Note that he indexes at one
 # risky:(2,2,2),(3,2,1)
 
 # our Q-table, initialized to 0 on purpose
@@ -414,6 +521,7 @@ dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
 world = [[[-1, -1, -1], [-1, 14, -1], [14, -2, -1]],  # 1
          [[14, -1, -1], [-1, -2, -1], [-1, -1, 14]],  # 2
          [[14, -1, -1], [-1, -1, -1], [-1, 14, -1]]]  # 3
+# [up, down, north, south, east, west]
 
 world = np.array(world)
 
@@ -443,8 +551,9 @@ print('Manhattan Distance between', fem_agent.current_pos, 'and', male_agent.cur
 numSteps = 10000
 
 q = Qtable()
-print("Number of steps till finished: ", q.qLearning(male_agent, fem_agent, world, var_gamma, var_alpha, numSteps,pickupArray, dropoffArray))
+print("Number of steps till finished: ", q.SARSA(male_agent, fem_agent, world, var_gamma, var_alpha, numSteps,pickupArray, dropoffArray))
 print("Male agent position: ", male_agent.current_pos," Female agent position: ", fem_agent.current_pos)
+print("Male agent reward: ", male_agent.reward, " Female agent reward: ", fem_agent.reward)
 for p in pickupArray:
 	print("This is pickup: ", p.num_blocks)
 

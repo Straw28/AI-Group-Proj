@@ -33,7 +33,7 @@ class Action:
     rewards = Reward()
 
     def takeDirection(self, agent, agent2, world, direction):
-        int agentreward = 0
+        agentreward = 0
         oldAgent = agent
         if direction == 0:
             agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])

@@ -15,4 +15,4 @@
   * ***Michelle Nguyen***
   * ***Maria Thomas***
   * ***Tasneem Patel***
-  * ***Brayan Sosa
+  * ***Brayan Sosa***

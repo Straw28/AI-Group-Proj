@@ -250,27 +250,27 @@ class Qtable:
             for direction in f_future_directions:
                 if f_agent.have_block == 0:
                     f_future_directions_qvalue.append(
-                        self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][direction])
+                        self.Qtable[new_state_f][0][direction])
                 elif f_agent.have_block == 1:
                     f_future_directions_qvalue.append(
-                        self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][direction])
+                        self.Qtable[new_state_f][1][direction])
 
             #actually plugging into equation
             #Q(s,a) = (1-alpha) * Q(a,s) + alpha*[my_reward.rewardReturn() + gamma * max(Q(a', s'))]
-            if m_agent.have_block == 0:
-                self.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] = self.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha * (
-                    rewards.rewardReturn(m_agent, old_m, world)+ var_gamma * max(m_future_directions_qvalue) - self.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m])
+            if m_agent.have_block == 0:                                                                                     
+                self.Qtable[new_state_m][0][m] = self.Qtable[old_state_m][0][m] + var_alpha * (                             
+                    rewards.rewardReturn(m_agent, old_m, world)+ var_gamma * max(m_future_directions_qvalue) - self.Qtable[old_state_m][0][m])
             elif m_agent.have_block == 1:
-                self.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] = self.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m] + var_alpha * (
-                    rewards.rewardReturn(m_agent, old_m, world) + var_gamma * max(m_future_directions_qvalue) - self.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m])
+                self.Qtable[new_state_m][1][m] = self.Qtable[old_state_m][1][m] + var_alpha * (
+                    rewards.rewardReturn(m_agent, old_m, world) + var_gamma * max(m_future_directions_qvalue) - self.Qtable[old_state_m][1][m])
 
             # go to the beginning of the qtable class
             if f_agent.have_block == 0:
-                self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] = self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f] + var_alpha * (
-                    rewards.rewardReturn(f_agent, old_f, world)+ var_gamma * max(f_future_directions_qvalue) - self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f])
+                self.Qtable[new_state_f][0][f] = self.Qtable[old_state_f][0][f] + var_alpha * (
+                    rewards.rewardReturn(f_agent, old_f, world)+ var_gamma * max(f_future_directions_qvalue) - self.Qtable[old_state_f][0][f])
             elif f_agent.have_block == 1:
-                self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] = self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha * (
-                    rewards.rewardReturn(f_agent, old_f, world) + var_gamma * max(f_future_directions_qvalue) - self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
+                self.Qtable[new_state_f][1][f] = self.Qtable[old_state_f][1][f] + var_alpha * (
+                    rewards.rewardReturn(f_agent, old_f, world) + var_gamma * max(f_future_directions_qvalue) - self.Qtable[old_state_f][1][f])
 
         if i == num_steps - 1:
             return i
@@ -290,10 +290,13 @@ class Qtable:
                     break
                 if finished:
                     return i
+        
+            old_m = Agent(m_agent.current_pos, m_agent.other_pos, m_agent.reward, m_agent.have_block)
+            old_f = Agent(f_agent.current_pos, f_agent.other_pos, f_agent.reward, f_agent.have_block)
+
             old_state_m = m_agent.current_pos
-            old_state_f = f_agent.current_pos  # <--- memorize what the past
-            old_m = m_agent
-            old_f = f_agent
+            old_state_f = f_agent.current_pos
+
             if i < 500:
                 # running the policy for the male agent
                 m = p.PRandom(m_agent, f_agent, world)
@@ -322,20 +325,20 @@ class Qtable:
 
             for direction in f_future_directions:
                 if f_agent.have_block == 0:
-                    f_future_directions_qvalue.append( self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][direction])
+                    f_future_directions_qvalue.append( self.Qtable[new_state_f][0][direction])
                 elif f_agent.have_block == 1:
-                    f_future_directions_qvalue.append(self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][direction])
+                    f_future_directions_qvalue.append(self.Qtable[new_state_f][1][direction])
 
-            if m_agent.have_block == 0:
-                self.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] += self.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha*(world[old_state_m[0]][old_state_m[1]][old_state_m[2]] + var_gamma*self.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] - self.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m])
+            if m_agent.have_block == 0: #sending the old agent twice to the return rewards func bc we just want the reward at that single state
+                self.Qtable[new_state_m][0][m] += self.Qtable[old_state_m][0][m] + var_alpha*(rewards.rewardReturn(old_m, old_m, world) + var_gamma*self.Qtable[new_state_m][0][m] - self.Qtable[old_state_m][0][m])
             elif m_agent.have_block == 1:
-                self.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] += self.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m] + var_alpha*(world[old_state_m[0]][old_state_m[1]][old_state_m[2]] + var_gamma*self.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] - self.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m])
+                self.Qtable[new_state_m][1][m] += self.Qtable[old_state_m][1][m] + var_alpha*(rewards.rewardReturn(old_m, old_m, world)  + var_gamma*self.Qtable[new_state_m][1][m] - self.Qtable[old_state_m][1][m])
 
             # go to the beginning of the qtable class
             if f_agent.have_block == 0:
-                self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] = self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f] + var_alpha*(world[old_state_f[0]][old_state_f[1]][old_state_f[2]] + var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] - self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f])
+                self.Qtable[new_state_f][0][f] = self.Qtable[old_state_f][0][f] + var_alpha*(rewards.rewardReturn(old_f, old_f, world)+ var_gamma*self.Qtable[new_state_f][0][f] - self.Qtable[old_state_f][0][f])
             elif f_agent.have_block == 1:
-                self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] = self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha*(world[old_state_f[0]][old_state_f[1]][old_state_f[2]] + var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] - self.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
+                self.Qtable[new_state_f][1][f] = self.Qtable[old_state_f][1][f] + var_alpha*(rewards.rewardReturn(old_f, old_f, world) + var_gamma*self.Qtable[new_state_f][1][f] - self.Qtable[old_state_f][1][f])
         
         if i == num_steps - 1:
             return i
@@ -426,14 +429,16 @@ def main():
     printWorld(male_agent, fem_agent)
     q = Qtable()
     num_steps = 1000
-    a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+    #a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+    b = q.SARSA(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
     
     print("Q-Table")
     printQTable(q)
 
    
     print("Male agent reward: ", male_agent.reward, " Female agent reward: ", fem_agent.reward)
-    print("number of steps", a)
+    #"number of steps", a)
+    print("number steps ", b)
    
 
 if __name__ == "__main__":

@@ -290,6 +290,7 @@ class Qtable:
     def SARSA(self, m_agent, f_agent, world, var_gamma, var_alpha, num_steps):
         p = Policy()  
         a = isValid()
+        q = Qtable()
         rewards = Reward()
         
         for i in range(num_steps):  # <--- here we iterate through the number of steps per experitment
@@ -319,29 +320,29 @@ class Qtable:
 
             for direction in m_future_directions:
                 if m_agent.have_block == 0:
-                    m_future_directions_qvalue.append(self.Qtable[new_state_m][0][direction])
+                    m_future_directions_qvalue.append(q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][direction])
                 elif m_agent.have_block == 1:
-                    m_future_directions_qvalue.append(self.Qtable[new_state_m][1][direction])
+                    m_future_directions_qvalue.append(q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][direction])
 
             f_future_directions = a.directionParser(f_agent)
             f_future_directions_qvalue = []
 
             for direction in f_future_directions:
                 if f_agent.have_block == 0:
-                    f_future_directions_qvalue.append( self.Qtable[new_state_f][0][direction])
+                    f_future_directions_qvalue.append(q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][direction])
                 elif f_agent.have_block == 1:
-                    f_future_directions_qvalue.append(self.Qtable[new_state_f][1][direction])
+                    f_future_directions_qvalue.append(q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][direction])
 
             if m_agent.have_block == 0: #sending the old agent twice to the return rewards func bc we just want the reward at that single state
-                self.Qtable[new_state_m][0][m] += self.Qtable[old_state_m][0][m] + var_alpha*(rewards.rewardReturn(old_m, world) + var_gamma*self.Qtable[new_state_m][0][m] - self.Qtable[old_state_m][0][m])
+                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] += q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha*(rewards.rewardReturn(old_m, world) + var_gamma * q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m])
             elif m_agent.have_block == 1:
-                self.Qtable[new_state_m][1][m] += self.Qtable[old_state_m][1][m] + var_alpha*(rewards.rewardReturn(old_m, world)  + var_gamma*self.Qtable[new_state_m][1][m] - self.Qtable[old_state_m][1][m])
+                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] += q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha*(rewards.rewardReturn(old_m, world) + var_gamma * q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m])
 
             # go to the beginning of the qtable class
             if f_agent.have_block == 0:
-                self.Qtable[new_state_f][0][f] = self.Qtable[old_state_f][0][f] + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f][0][f] - self.Qtable[old_state_f][0][f])
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] - self.Qtable[old_state_f][0][f])
             elif f_agent.have_block == 1:
-                self.Qtable[new_state_f][1][f] = self.Qtable[old_state_f][1][f] + var_alpha*(rewards.rewardReturn(old_f, world) + var_gamma*self.Qtable[new_state_f][1][f] - self.Qtable[old_state_f][1][f])
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] - self.Qtable[old_state_f][1][f])
 
             finished = True
             for d in dropoffArray:

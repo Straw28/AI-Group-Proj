@@ -362,9 +362,9 @@ class Qtable:
 
             # go to the beginning of the qtable class
             if f_agent.have_block == 0:
-                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] - self.Qtable[old_state_f][0][f])
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] += q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] - self.Qtable[old_state_f][0][f])
             elif f_agent.have_block == 1:
-                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] - self.Qtable[old_state_f][1][f])
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] += q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] - self.Qtable[old_state_f][1][f])
 
             finished = True
             for d in dropoffArray:
@@ -469,7 +469,7 @@ def main():
     q = Qtable()
     num_steps = 700
     printWorld(male_agent, fem_agent)
-    a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+    a = q.SARSA(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
 
     # # print("Q-Table")
     # # printQTable(q)
@@ -478,6 +478,8 @@ def main():
     # #"number of steps", a)
     print("number steps ", a)
 
+    # print("Q-Table: ")
+    # printQTable(q)
 
 if __name__ == "__main__":
     main()

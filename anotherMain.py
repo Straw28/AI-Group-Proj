@@ -4,13 +4,13 @@ from scipy.spatial.distance import cityblock
 # ZYX
 pickup1 = (0, 1, 1)
 pickup2 = (1, 2, 2)
-pickupArray = [pickup1, pickup2]
+pickupArray = [pickup1, pickup2] #this establishes all of the pick up cells and adds them to an array
 
 dropoff1 = (1, 0, 0)
 dropoff2 = (2, 0, 0)
 dropoff3 = (0, 0, 2)
 dropoff4 = (2, 1, 2)
-dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4]
+dropoffArray = [dropoff1, dropoff2, dropoff3, dropoff4] #this establishes all of our drop off cells and adds them to an array
 
 world = [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 0
          [[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 1
@@ -23,9 +23,10 @@ for i in pickupArray:
 
 for i in dropoffArray:
     world[i[0]][i[1]][i[2]] = 5
+#here we define our world and fill in all pickupcells to 5 and dropoffcells to 10 and
+#subtract 1 when we pick up/drop off until the world is essentially "empty"
 
-
-def printQTable(q):
+def printQTable(q): #this function simply prints all the values in the Q-table
     for a, state in enumerate(q.Qtable):
         for b, actions in enumerate(state):
             for c, other_agent_pos in enumerate(actions):
@@ -33,7 +34,7 @@ def printQTable(q):
                     print(f"Q value at ({a}, {b}, {c}, {d}): {has_block}")
 
 
-def printWorld(agent_m, agent_f):
+def printWorld(agent_m, agent_f): #this function simply prints our world separated into layer 1, 2, and 3
     for i in range(world.shape[0]):
         print("Layer", i + 1, ":")
         for j in range(world.shape[1]):
@@ -49,6 +50,8 @@ def printWorld(agent_m, agent_f):
 
 
 def agentInfo(agent):
+    # this function prints the position of an agent, other agents position, the agents reward,
+    # and whether they have a block or not
     print("---------------------------------")
     print("Agent Postion: ", agent.current_pos)
     print("Other Agent: ", agent.other_pos)
@@ -59,7 +62,10 @@ def agentInfo(agent):
 
 # don't need a state class bc everything is in agent or cells
 class Agent:
-    def __init__(self, current_pos, other_pos, reward, have_block):
+    # the agent class is what allows us to initialize all the agents with their position
+    # the other agents position to keep them aware of the oposing agent, the agents current reward
+    # and finally whether they are holding a block or not
+    def __init__(self, current_pos, other_pos, reward, have_block): #this function initializes the agents with the values mentioned above
         self.current_pos = current_pos  # tuple [z,y,x]
         # the other agent's position
         self.other_pos = other_pos
@@ -70,8 +76,10 @@ class Agent:
 
 
 class Reward:
-    # actions = Action
+    # the Reward class allows us to determine what rewards to give an agent based on the cell that they stepped on
+
     def canPickUp(self, future_agent, world):
+        # this function determines whether we can pick up a block from a pickup cell
         if future_agent.have_block == 0:
             if future_agent.current_pos in pickupArray and \
                     world[future_agent.current_pos[0]][future_agent.current_pos[1]][future_agent.current_pos[2]] > 0:
@@ -79,6 +87,7 @@ class Reward:
         return False
 
     def canDropOff(self, future_agent, world):
+        # this function determines whether we can drop off a block into a dropoff cell
         if future_agent.have_block == 1:
             if future_agent.current_pos in dropoffArray and \
                     world[future_agent.current_pos[0]][future_agent.current_pos[1]][future_agent.current_pos[2]] > 0:
@@ -87,11 +96,13 @@ class Reward:
         return False
 
     def isRisky(self, future_agent):
+        # this function determines whether we are stepping into a risky cell
         if future_agent.current_pos == (1, 1, 1) or future_agent.current_pos == (0, 1, 2):
             return True
         return False
 
     def rewardReturn(self, future_agent, world):
+        # this function returns a reward based on whether we dropoff/pickup, step on a risky cell, or just step on a normal cell
         if self.canPickUp(future_agent, world) or self.canDropOff(future_agent, world):
             return 14
         elif self.isRisky(future_agent):
@@ -101,6 +112,9 @@ class Reward:
 
 
 class Action:
+    # the action class allows us to move our agents around our world
+    # as well as
+
     # instantiate a Reward object to be used in Action class
     rewards = Reward()
 
@@ -206,7 +220,7 @@ class Qtable:
     # Q(s,a) = (1-alpha) * Q(a,s) + alpha*[my_reward.rewardReturn() + gamma * max(Q(a', s'))]
     Qtable = np.zeros((3, 3, 3, 2, 6))  # always starts off at zero
 
-    def qLearning(self, m_agent, f_agent, world, var_gamma, var_alpha, num_steps):
+    def qLearning(self, m_agent, f_agent, world, var_gamma, var_alpha, num_steps, experiment):
         p = Policy()
         a = isValid()
         q = Qtable()
@@ -223,14 +237,21 @@ class Qtable:
             old_state_m = m_agent.current_pos
             old_state_f = f_agent.current_pos
 
-            if i < 500:
+            if i < 50 or experiment == "1A":
                 # running the policy for the male agent
                 m = p.PRandom(m_agent, f_agent, world)
                 # running the policy for the female agent
                 f = p.PRandom(f_agent, m_agent, world)
             else:
-                m = p.PGreedy(m_agent, f_agent, world)
-                f = p.PGreedy(f_agent, m_agent, world)
+                if experiment == "1B":
+                    m = p.PGreedy(m_agent, f_agent, world)
+                    f = p.PGreedy(f_agent, m_agent, world)
+                elif experiment == "1C":
+                    m = p.PExploit(m_agent, f_agent, world)
+                    f = p.PExploit(f_agent, m_agent, world)
+                elif experiment == "2":
+                    return  i + q.SARSA(m_agent, f_agent, world, var_gamma, var_alpha, num_steps - i)
+
 
             agentInfo(m_agent)
             agentInfo(f_agent)
@@ -323,14 +344,8 @@ class Qtable:
             old_state_m = m_agent.current_pos
             old_state_f = f_agent.current_pos
 
-            if i < 500:
-                # running the policy for the male agent
-                m = p.PRandom(m_agent, f_agent, world)
-                # running the policy for the female agent
-                f = p.PRandom(f_agent, m_agent, world)
-            else:
-                m = p.PGreedy(m_agent, f_agent, world)
-                f = p.PGreedy(f_agent, m_agent, world)
+            m = p.PExploit(m_agent, f_agent, world)
+            f = p.PExploit(f_agent, m_agent, world)
 
             printWorld(m_agent, f_agent)
 
@@ -362,9 +377,9 @@ class Qtable:
 
             # go to the beginning of the qtable class
             if f_agent.have_block == 0:
-                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] - self.Qtable[old_state_f][0][f])
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] += q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] - self.Qtable[old_state_f][0][f])
             elif f_agent.have_block == 1:
-                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] = q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] - self.Qtable[old_state_f][1][f])
+                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] += q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] - self.Qtable[old_state_f][1][f])
 
             finished = True
             for d in dropoffArray:
@@ -403,13 +418,14 @@ class Policy:
                 agent.other_pos = temp_agent.other_pos
                 agent.reward = temp_agent.reward
                 agent.have_block = temp_agent.have_block
-                return
+                return direction
 
         r = np.random.choice(directions)
         self.myaction.takeDirection(agent, agent2, world, r)  # takes direction
-        return
+        return r
 
     def PGreedy(self, agent, agent2, world):
+        print("Before for current pos:", agent.current_pos)
         directions = self.is_it_valid.directionParser(agent)
         temp_agent = Agent(agent.current_pos, agent.other_pos, agent.reward, agent.have_block)
         temp_pos = agent.current_pos
@@ -424,9 +440,10 @@ class Policy:
                 agent.other_pos = temp_agent.other_pos
                 agent.reward = temp_agent.reward
                 agent.have_block = temp_agent.have_block
-                return
+                return direction
 
         directionsQvalues = dict()
+        print("After for current pos:", agent.current_pos)
         state = agent.current_pos
         for direction in directions:
             if agent.have_block == 0:
@@ -435,7 +452,9 @@ class Policy:
                 directionsQvalues[direction] = self.q.Qtable[state[0]][state[1]][state[2]][1][direction]
 
         maxdirection = max(directionsQvalues, key=directionsQvalues.get)
+        print("this is the max direction: ",  maxdirection, "This is the qvalue: ", directionsQvalues[maxdirection])
         self.myaction.takeDirection(agent, agent2, world, maxdirection)
+        return maxdirection
         # print("Greedy, Agent end: ", agent.current_pos)
 
     def PExploit(self, agent, agent2, world):
@@ -444,15 +463,18 @@ class Policy:
         for direction in directions:  # this is to check if there is a pick up or drop off available
             if self.rewards.rewardReturn(future_agent, world) > 0:
                 agent = future_agent
-                return
+                return direction
         r = np.random.rand()
         if r <= .80:
-            self.PGreedy(agent, agent2, world)
+            return self.PGreedy(agent, agent2, world)
         else:
-            self.PRandom(agent, agent2, world)
+            return self.PRandom(agent, agent2, world)
 
 
 def main():
+    print("Here are the options you have for experiments: 1A, 1B, 1C, 2, 3, 4")
+    experiment = input("Please select the experiment that you would like to run:")
+
     fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0)
     male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
 
@@ -467,9 +489,10 @@ def main():
     var_lambda = 0.5
 
     q = Qtable()
-    num_steps = 700
+    num_steps = 10000
     printWorld(male_agent, fem_agent)
-    a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps)
+
+    a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps, experiment)
 
     # # print("Q-Table")
     # # printQTable(q)

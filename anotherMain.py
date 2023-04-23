@@ -494,6 +494,7 @@ def main():
 
     a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps, experiment)
 
+
     # # print("Q-Table")
     # # printQTable(q)
 
@@ -501,6 +502,8 @@ def main():
     # #"number of steps", a)
     print("number steps ", a)
 
+    # print("Q-Table: ")
+    # printQTable(q)
 
 if __name__ == "__main__":
     main()

@@ -20,10 +20,10 @@ world = [[[0, 0, 0], [0, 0, 0],  [0, 0, 0]],        # 0
 world = np.array(world)
 
 for i in pickupArray:
-    world[i[0]][i[1]][i[2]] = 10
+    world[i] = 10
 
 for i in dropoffArray:
-    world[i[0]][i[1]][i[2]] = 5
+    world[i] = 5
 
 def printQTable(q):
     for a, state in enumerate(q.Qtable):
@@ -32,19 +32,40 @@ def printQTable(q):
                 for d, has_block in enumerate(other_agent_pos):
                     print(f"Q value at ({a}, {b}, {c}, {d}): {has_block}")
 
+# def printWorld(agent_m, agent_f):
+#     for i in range(world.shape[0]):
+#         print("Layer", i+1, ":")
+#         for j in range(world.shape[1]):
+#             for k in range(world.shape[2]):
+#                 if(agent_m.current_pos == (i,j,k)):
+#                     print('M', end= ' ')
+#                 elif(agent_f.current_pos == (i,j,k)):
+#                     print('F', end= ' ')
+#                 else:
+#                     print(world[i][j][k], end=" ")
+#             print()
+#         print()
+#     print("-----------")
 def printWorld(agent_m, agent_f):
     for i in range(world.shape[0]):
         print("Layer", i+1, ":")
         for j in range(world.shape[1]):
             for k in range(world.shape[2]):
                 if(agent_m.current_pos == (i,j,k)):
-                    print('M +', world[i][j][k],end= ' ')
+                    print('M', end= ' ')
                 elif(agent_f.current_pos == (i,j,k)):
-                    print('F +', world[i][j][k], end= ' ')
+                    print('F', end= ' ')
                 else:
                     print(world[i][j][k], end=" ")
             print()
         print()
+    print("-----------")
+
+def agentInfo(agent):
+    print("Agent Postion: ", agent.current_pos)
+    print("Other Agent: ", agent.other_pos)
+    print("Reward: ", agent.reward)
+    print("Have Block? ", agent.have_block)
 
 def agentInfo(agent):
     print("---------------------------------")
@@ -73,10 +94,10 @@ class Reward:
                 return True
         return False
 
-    def canDropOff(self, future_agent, world):
-        if future_agent.have_block == 1:
-            if future_agent.current_pos in dropoffArray and world[future_agent.current_pos[0]][future_agent.current_pos[1]][future_agent.current_pos[2]] > 0:
-                #print("in can drop off")
+    def canDropOff(self, future_agent, currentAgent, world):
+        if currentAgent.have_block == 1:
+            if future_agent.current_pos in dropoffArray and world[future_agent.current_pos] > 0:
+                print("in can drop off")
                 return True
         return False
 
@@ -93,7 +114,14 @@ class Reward:
         else:
             return -1
 
-
+def deduct_cell_value(self, agent, old_agent, world):
+    if self.rewards.canPickUp(agent, old_agent, world):
+        agent.have_block = 1
+    elif self.rewards.canDropOff(agent, old_agent, world):
+        agent.have_block = 0
+        print("dropped")
+    world[agent.current_pos] -= 1
+    print("world:", world[agent.current_pos])
 class Action:
     # instantiate a Reward object to be used in Action class
     rewards = Reward()
@@ -116,46 +144,70 @@ class Action:
             agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-               self.deduct_cell_value(agent, old_agent, world) 
-            
+                if self.rewards.canPickUp(agent, old_agent, world):
+                    agent.have_block = 1
+                elif self.rewards.canDropOff(agent, old_agent, world):
+                    agent.have_block = 0
+                world[agent.current_pos] -= 1
+            agent2.other_pos = agent.current_pos
 
         elif direction == 1:
             agent.current_pos = (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-              self.deduct_cell_value(agent, old_agent, world) 
-            
+                if self.rewards.canPickUp(agent, old_agent, world):
+                    agent.have_block = 1
+                elif self.rewards.canDropOff(agent, old_agent, world):
+                    agent.have_block = 0
+                world[agent.current_pos] -= 1
+            agent2.other_pos = agent.current_pos
 
         elif direction == 2:
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-               self.deduct_cell_value(agent, old_agent, world) 
-            
+                if self.rewards.canPickUp(agent, old_agent, world):
+                    agent.have_block = 1
+                elif self.rewards.canDropOff(agent, old_agent, world):
+                    agent.have_block = 0
+                world[agent.current_pos] -= 1
+            agent2.other_pos = agent.current_pos
 
         elif direction == 3:
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-               self.deduct_cell_value(agent, old_agent, world) 
-            
+                if self.rewards.canPickUp(agent, old_agent, world):
+                    agent.have_block = 1
+                elif self.rewards.canDropOff(agent, old_agent, world):
+                    agent.have_block = 0
+                world[agent.current_pos] -= 1
+            agent2.other_pos = agent.current_pos
 
         elif direction == 4:
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-               self.deduct_cell_value(agent, old_agent, world)
-            
+                if self.rewards.canPickUp(agent, old_agent, world):
+                    agent.have_block = 1
+                elif self.rewards.canDropOff(agent, old_agent, world):
+                    agent.have_block = 0
+                world[agent.current_pos] -= 1
+            agent2.other_pos = agent.current_pos
 
         elif direction == 5:
             agent.current_pos = (
                 agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-               self.deduct_cell_value(agent, old_agent, world) 
-            
-        agent.reward += agent_reward
-        agent2.other_pos = agent.current_pos 
+                if self.rewards.canPickUp(agent, old_agent, world):
+                    agent.have_block = 1
+                elif self.rewards.canDropOff(agent, old_agent, world):
+                    agent.have_block = 0
+                world[agent.current_pos] -= 1
+            agent2.other_pos = agent.current_pos
+        
+        agent.reward += agent_reward 
 
 
 # Checks if a move is valid or not
@@ -187,7 +239,19 @@ class isValid:
 
         return dirArray
 
-
+def fill_Qtable(self, agent,new_state, future_dir, arr_qval):
+    for direction in future_dir:
+        if agent.have_block == 0:                     #does not have block
+            arr_qval.append(self.Qtable[new_state][0][direction]) #state/ input to the q table
+        elif agent.have_block == 1:
+            arr_qval.append(self.Qtable[new_state][1][direction])
+def plugin_qLearning(self, agent, old_agent,arr_qval, new_state, old_state, agent_policy,alpha,gamma,rewards):
+    if agent.have_block == 0:
+        self.Qtable[new_state][0][agent_policy] = self.Qtable[old_state][0][agent_policy] + alpha * (
+            rewards.rewardReturn(agent, old_agent, world)+ gamma * max(arr_qval) - self.Qtable[old_state][0][agent_policy])
+    elif agent.have_block == 1:
+        self.Qtable[new_state][1][agent_policy] = self.Qtable[old_state][1][agent_policy] + alpha * (
+            rewards.rewardReturn(agent, old_agent, world) + gamma * max(arr_qval) - self.Qtable[old_state][1][agent_policy])
 class Qtable:
     # Q[Z][Y][X][block or no block][action]  <-- This is how the q-table is set up
     # Q(s,a) = (1-alpha) * Q(a,s) + alpha*[my_reward.rewardReturn() + gamma * max(Q(a', s'))]
@@ -201,16 +265,11 @@ class Qtable:
         rewards = Reward()
 
         for i in range(num_steps):
-            old_m = Agent(m_agent.current_pos, m_agent.other_pos, m_agent.reward, m_agent.have_block)
-            old_f = Agent(f_agent.current_pos, f_agent.other_pos, f_agent.reward, f_agent.have_block)
-           
-            # print("old agent: ")
-            # agentInfo(old_m)
-            # agentInfo(old_f)
-
+             
             old_state_m = m_agent.current_pos
-            old_state_f = f_agent.current_pos
-           
+            old_state_f = f_agent.current_pos  # <--- memorize what the past
+            old_m = m_agent
+            old_f = f_agent
             if i < 500:
                 # running the policy for the male agent
                 m = p.PRandom(m_agent, f_agent, world)
@@ -232,10 +291,10 @@ class Qtable:
             m_future_directions_qvalue = []                     #list stores q values for surrounding directions
             
             for direction in m_future_directions:
-                if m_agent.have_block == 0:
-                    m_future_directions_qvalue.append(q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][direction])
+                if m_agent.have_block == 0:                     #does not have block
+                    m_future_directions_qvalue.append(self.Qtable[new_state_m][0][direction]) #state/ input to the q table
                 elif m_agent.have_block == 1:
-                    m_future_directions_qvalue.append(q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][direction])
+                    m_future_directions_qvalue.append(self.Qtable[new_state_m][1][direction])
 
             #female agent
             f_future_directions = a.directionParser(f_agent)
@@ -243,47 +302,40 @@ class Qtable:
             
             for direction in f_future_directions:
                 if f_agent.have_block == 0:
-                    f_future_directions_qvalue.append(q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][direction])
+                    f_future_directions_qvalue.append(
+                        self.Qtable[new_state_f][0][direction])
                 elif f_agent.have_block == 1:
-                    f_future_directions_qvalue.append(q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][direction])
+                    f_future_directions_qvalue.append(
+                        self.Qtable[new_state_f][1][direction])
 
             #actually plugging into equation
             #Q(s,a) = (1-alpha) * Q(a,s) + alpha*[my_reward.rewardReturn() + gamma * max(Q(a', s'))]
             if m_agent.have_block == 0:                                                                                     
-                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] +=  q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha * (                             
-                    rewards.rewardReturn(m_agent, world)+ var_gamma * max(m_future_directions_qvalue) - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m])
+                self.Qtable[new_state_m][0][m] = self.Qtable[old_state_m][0][m] + var_alpha * (                             
+                    rewards.rewardReturn(m_agent, old_m, world)+ var_gamma * max(m_future_directions_qvalue) - self.Qtable[old_state_m][0][m])
             elif m_agent.have_block == 1:
-                q.Qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] +=  q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m] + var_alpha * (                             
-                    rewards.rewardReturn(m_agent, world)+ var_gamma * max(m_future_directions_qvalue) - q.Qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m])
+                self.Qtable[new_state_m][1][m] = self.Qtable[old_state_m][1][m] + var_alpha * (
+                    rewards.rewardReturn(m_agent, old_m, world) + var_gamma * max(m_future_directions_qvalue) - self.Qtable[old_state_m][1][m])
 
             # go to the beginning of the qtable class
-            if f_agent.have_block == 0:                                                                                     
-                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] +=  q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f] + var_alpha * (                             
-                    rewards.rewardReturn(f_agent, world)+ var_gamma * max(f_future_directions_qvalue) - q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f])
+            if f_agent.have_block == 0:
+                self.Qtable[new_state_f][0][f] = self.Qtable[old_state_f][0][f] + var_alpha * (
+                    rewards.rewardReturn(f_agent, old_f, world)+ var_gamma * max(f_future_directions_qvalue) - self.Qtable[old_state_f][0][f])
             elif f_agent.have_block == 1:
-                q.Qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] +=  q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha * (                             
-                    rewards.rewardReturn(f_agent, world)+ var_gamma * max(f_future_directions_qvalue) - q.Qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
-            print()
-            for d in pickupArray:
-                print("pickup: ", d)
-                print("world at pickup: ", world[d[0]][d[1]][d[2]])
-            print()
-            #exp 4 check if the total sum of drop offs = 3 (in our case 17?)
-            for d in dropoffArray:
-                print("drop: ", d)
-                print("world at drop: ", world[d])
-            print()
-            finished = True
-            for d in dropoffArray:
-                if world[d[0]][d[1]] [d[2]]> 0:
-                    finished = False
-                    break
-            if finished:
-                print ("Done!")
-                return i
-            
-            if i == num_steps - 1:
-                return i
+                self.Qtable[new_state_f][1][f] = self.Qtable[old_state_f][1][f] + var_alpha * (
+                    rewards.rewardReturn(f_agent, old_f, world) + var_gamma * max(f_future_directions_qvalue) - self.Qtable[old_state_f][1][f])
+        
+        finished = True
+        for d in dropoffArray:
+            if world[d] > 0:
+                finished = False
+                break
+        if finished:
+            print ("Done!")
+            return i
+        
+        if i == num_steps - 1:
+            return i
 
 
 
@@ -341,20 +393,11 @@ class Qtable:
             if f_agent.have_block == 0:
                 self.Qtable[new_state_f][0][f] = self.Qtable[old_state_f][0][f] + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*self.Qtable[new_state_f][0][f] - self.Qtable[old_state_f][0][f])
             elif f_agent.have_block == 1:
-                self.Qtable[new_state_f][1][f] = self.Qtable[old_state_f][1][f] + var_alpha*(rewards.rewardReturn(old_f, world) + var_gamma*self.Qtable[new_state_f][1][f] - self.Qtable[old_state_f][1][f])
+                self.Qtable[new_state_f][1][f] = self.Qtable[old_state_f][1][f] + var_alpha*(rewards.rewardReturn(old_f, old_f, world) + var_gamma*self.Qtable[new_state_f][1][f] - self.Qtable[old_state_f][1][f])
+        
+        if i == num_steps - 1:
+            return i
 
-            finished = True
-            for d in dropoffArray:
-                if world[d] > 0:
-                    finished = False
-                    break
-            if finished:
-                print ("Done!")
-                return i
-            
-            if i == num_steps - 1:
-                return i
-   
 
 
 class Policy:  
@@ -382,6 +425,7 @@ class Policy:
                 agent.other_pos = temp_agent.other_pos
                 agent.reward = temp_agent.reward
                 agent.have_block = temp_agent.have_block
+                agentInfo(agent)
                 return
 
         r = np.random.choice(directions)
@@ -448,7 +492,8 @@ def main():
     var_alpha = 0.3
     var_lambda = 0.5
 
-
+   
+    printWorld(male_agent, fem_agent)
     q = Qtable()
     num_steps = 700
     printWorld(male_agent,fem_agent)
@@ -460,8 +505,10 @@ def main():
 
    
     print("Male agent reward: ", male_agent.reward, " Female agent reward: ", fem_agent.reward)
-    # #"number of steps", a)
+    #"number of steps", a)
     print("number steps ", a)
+    #print("number steps ", b)
+
    
 
 if __name__ == "__main__":

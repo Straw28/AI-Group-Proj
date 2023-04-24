@@ -353,8 +353,7 @@ class Qtable:
             # exp 4 check if the total sum of drop offs = 3 (in our case 17?)
             for d in dropoffArray:
                 print("drop: ", d)
-                print("world at drop: ", world[d[0]][d[1]][d[2]])
-                total_dropoffs += world[d[0]][d[1]][d[2]] 
+                print("world at drop: ", world[d[0]][d[1]][d[2]]) 
             print()
             
             finished = True
@@ -362,6 +361,7 @@ class Qtable:
                 if world[d[0]][d[1]][d[2]] > 0:
                     finished = False
                     break
+            
             if finished:
                 print("Done!")
                 return i
@@ -418,6 +418,17 @@ class Qtable:
                 qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] += qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] - qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f])
             elif f_agent.have_block == 1:
                 qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] += qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f]  + var_alpha*(rewards.rewardReturn(old_f, world)+ var_gamma*qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] - qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
+
+            print()
+            for d in pickupArray:
+                print("pickup: ", d)
+                print("world at pickup: ", world[d[0]][d[1]][d[2]])
+            print()
+            # exp 4 check if the total sum of drop offs = 3 (in our case 17?)
+            for d in dropoffArray:
+                print("drop: ", d)
+                print("world at drop: ", world[d[0]][d[1]][d[2]])   
+            print()
 
             finished = True
             for d in dropoffArray:

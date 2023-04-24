@@ -3,6 +3,9 @@
 ### Language:
 Python
 
+### Packages:
+`pip install numpy`
+
 ### How to run our code:
   1. Download our "main.py" file into your IDE
   2. Then proceed to enter one of the following inputs to run the experiment of your choice into your IDE's terminal:

@@ -113,11 +113,10 @@ class Reward:
             return -2
         else:
             return -1
-
-
+# the action class allows us to move our agents around our world
+# as well as updating the amount of blocks in a pick up/ drop off cell
 class Action:
-    # the action class allows us to move our agents around our world
-    # as well as updating the amount of blocks in a pick up/ drop off cell
+   
 
     # instantiate a Reward object to be used in Action class
     rewards = Reward()
@@ -182,13 +181,14 @@ class Action:
         agent.reward += agent_reward
         agent2.other_pos = agent.current_pos
 
-    # Checks if a move is valid or not
+  
 
-
+# checks for out of bounds & checks for if two agents are in the same block returns an array with valid moves
 class isValid:
-    # checks for out of bounds & checks for if two agents are in the same block returns an array with valid moves
+    
+# this function tells us what direction the agent is currently able to take
+    def directionParser(self, agent):
 
-    def directionParser(self, agent):  # this function tells us what direction the agent is currently able to take
         dirArray = [0, 1, 2, 3, 4, 5]
         for i in agent.current_pos:
             if i < 0 or i > 2:
@@ -256,10 +256,6 @@ class Qtable:
             old_m = Agent(m_agent.current_pos, m_agent.other_pos, m_agent.reward, m_agent.have_block)
             old_f = Agent(f_agent.current_pos, f_agent.other_pos, f_agent.reward, f_agent.have_block)
 
-            # print("old agent: ")
-            # agentInfo(old_m)
-            # agentInfo(old_f)
-
             old_state_m = m_agent.current_pos
             old_state_f = f_agent.current_pos
 
@@ -310,7 +306,7 @@ class Qtable:
                     f_future_directions_qvalue.append(
                         qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][direction])
 
-            # actually plugging into equation
+            # plugging into equation
             # Q(s,a) = (1-alpha) * Q(a,s) + alpha*[my_reward.rewardReturn() + gamma * max(Q(a', s'))]
             if m_agent.have_block == 0:
                 qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] += \
@@ -473,8 +469,8 @@ class Policy:
     myaction = Action()
     rewards = Reward()
 
-    # Checks if pick up or drop off is possible in the current state.
-
+    
+# Checks if pick up or drop off is possible in the current state.
     def PRandom(self, agent, agent2, world):  # 0 0 0
         directions = self.is_it_valid.directionParser(agent)
         temp_agent = Agent(agent.current_pos, agent.other_pos, agent.reward, agent.have_block)
@@ -531,7 +527,7 @@ class Policy:
         print("this is the max direction: ", maxdirection, "This is the qvalue: ", directionsQvalues[maxdirection])
         self.myaction.takeDirection(agent, agent2, world, maxdirection)
         return maxdirection
-        # print("Greedy, Agent end: ", agent.current_pos)
+ 
 
     def PExploit(self, agent, agent2, world, qtable):
         directions = self.is_it_valid.directionParser(agent)

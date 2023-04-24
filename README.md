@@ -13,6 +13,8 @@ Python
     * "2" to run experiment 2
     * "3" to run experiment 3
     * "4" to run experiment 4
+    
+   3. Finally enter either "1" or "2" to test out the two runs for the experiment of your choosing
 
 **This project was made by:**
   * ***Michelle Nguyen***

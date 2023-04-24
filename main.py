@@ -333,7 +333,18 @@ class Qtable:
                         rewards.rewardReturn(f_agent, world) + var_gamma * max(f_future_directions_qvalue) -
                         qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
             
-            
+            for d in dropoffArray:
+                total_dropoffs += world[d[0]][d[1]][d[2]] 
+
+            if total_dropoffs == 17 and experiment == "4": # 3 drop offs aka terminal states have occured
+                newPickUp1 = (2,2,1)
+                newPickUp2 = (0,2,0)
+                world[2][2][1] = world [0][1][1]
+                world[0][2][0] = world [1][2][2]
+                pickupArray.clear()
+                pickupArray.append(newPickUp1)
+                pickupArray.append(newPickUp2)
+
             print()
             for d in pickupArray:
                 print("pickup: ", d)
@@ -346,15 +357,6 @@ class Qtable:
                 total_dropoffs += world[d[0]][d[1]][d[2]] 
             print()
             
-            if total_dropoffs == 17 and experiment == "4": # 3 drop offs aka terminal states have occured
-                newPickUp1 = (2,2,1)
-                newPickUp2 = (0,2,0)
-                world[2][2][1] = world [0][1][1]
-                world[0][2][0] = world [1][2][2]
-                pickupArray.clear()
-                pickupArray.append(newPickUp1)
-                pickupArray.append(newPickUp2)
-
             finished = True
             for d in dropoffArray:
                 if world[d[0]][d[1]][d[2]] > 0:

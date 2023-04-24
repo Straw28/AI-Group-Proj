@@ -1,18 +1,17 @@
 import numpy as np
+from scipy.spatial.distance import cityblock
 
-# ZYX form
+# ZYX
 pickup1 = (0, 1, 1)
 pickup2 = (1, 2, 2)
-# this establishes all of the pick up cells and adds them to an array
-pickupArray = [pickup1, pickup2]
+pickupArray = [pickup1, pickup2]  # this establishes all of the pick up cells and adds them to an array
 
 dropoff1 = (1, 0, 0)
 dropoff2 = (2, 0, 0)
 dropoff3 = (0, 0, 2)
 dropoff4 = (2, 1, 2)
-# this establishes all of our drop off cells and adds them to an array
 dropoffArray = [dropoff1, dropoff2, dropoff3,
-                dropoff4]
+                dropoff4]  # this establishes all of our drop off cells and adds them to an array
 
 world = [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 0
          [[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 1
@@ -20,8 +19,6 @@ world = [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 0
 
 world = np.array(world)
 
-# here we define our world and fill in all pickupcells to 5 and dropoffcells to 10 and
-# subtract 1 when we pick up/drop off until the world is essentially "empty"
 for i in pickupArray:
     world[i[0]][i[1]][i[2]] = 10
 
@@ -29,7 +26,8 @@ for i in dropoffArray:
     world[i[0]][i[1]][i[2]] = 5
 
 
-
+# here we define our world and fill in all pickupcells to 5 and dropoffcells to 10 and
+# subtract 1 when we pick up/drop off until the world is essentially "empty"
 
 def printQTable(q):  # this function simply prints all the values in the Q-table
     for a, state in enumerate(q.Qtable):
@@ -65,12 +63,11 @@ def agentInfo(agent):
     print("---------------------------------")
 
 
-# the agent class is what allows us to initialize all the agents with their position
-# the other agents position to keep them aware of the oposing agent, the agents current reward
-# and finally whether they are holding a block or not
+# don't need a state class bc everything is in agent or cells
 class Agent:
-
-
+    # the agent class is what allows us to initialize all the agents with their position
+    # the other agents position to keep them aware of the oposing agent, the agents current reward
+    # and finally whether they are holding a block or not
     def __init__(self, current_pos, other_pos, reward,
                  have_block):  # this function initializes the agents with the values mentioned above
         self.current_pos = current_pos  # tuple [z,y,x]
@@ -81,9 +78,9 @@ class Agent:
         # integer
         self.have_block = have_block
 
-# the Reward class allows us to determine what rewards to give an agent based on the cell that they stepped on
-class Reward:
 
+class Reward:
+    # the Reward class allows us to determine what rewards to give an agent based on the cell that they stepped on
 
     def canPickUp(self, future_agent, world):
         # this function determines whether we can pick up a block from a pickup cell
@@ -116,13 +113,16 @@ class Reward:
             return -2
         else:
             return -1
-
-# this class allows us to move our agents around our world as well as instantiate a Reward object to be used in Action class
+# the action class allows us to move our agents around our world
+# as well as updating the amount of blocks in a pick up/ drop off cell
 class Action:
-    
+   
+
+    # instantiate a Reward object to be used in Action class
     rewards = Reward()
 
     def deduct_cell_value(self, agent, old_agent, world):
+        # updating the amount of blocks in a pick up/ drop off cell
         if self.rewards.canPickUp(agent, world):
             agent.have_block = 1
         elif self.rewards.canDropOff(agent, world):
@@ -133,47 +133,47 @@ class Action:
         print("world:", world[agent.current_pos[0]][agent.current_pos[1]][agent.current_pos[2]])
 
     def takeDirection(self, agent, agent2, world, direction):
+        # allows us to move our agents around our world
         agent_reward = 0
         old_agent = Agent(agent.current_pos, agent.other_pos, agent.reward, agent.have_block)
 
-        if direction == 0:
+        if direction == 0:  # move the agent up
             agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
                 self.deduct_cell_value(agent, old_agent, world)
 
 
-        elif direction == 1:
+        elif direction == 1:  # move the agent down
             agent.current_pos = (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
                 self.deduct_cell_value(agent, old_agent, world)
 
 
-        elif direction == 2:
+        elif direction == 2:  # move the agent north
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
                 self.deduct_cell_value(agent, old_agent, world)
 
 
-        elif direction == 3:
+        elif direction == 3:  # move the agent south
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
                 self.deduct_cell_value(agent, old_agent, world)
 
 
-        elif direction == 4:
+        elif direction == 4:  # move the agent east
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
                 self.deduct_cell_value(agent, old_agent, world)
 
 
-        elif direction == 5:
-            agent.current_pos = (
-                agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
+        elif direction == 5:  # move the agent west
+            agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
                 self.deduct_cell_value(agent, old_agent, world)
@@ -188,6 +188,7 @@ class isValid:
     
 # this function tells us what direction the agent is currently able to take
     def directionParser(self, agent):
+
         dirArray = [0, 1, 2, 3, 4, 5]
         for i in agent.current_pos:
             if i < 0 or i > 2:
@@ -195,34 +196,35 @@ class isValid:
                 return
                 # [up, down, north, south, east, west]
         if agent.current_pos[0] - 1 < 0 or (
-                agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos:
-            # temp = (agent.current_pos[0] - 1, agent.current_pos[1],agent.current_pos[2]) or
-            # if agent.have_block == 0 and temp in dropoffArray:
+        agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos:
             dirArray.remove(0)  # up
         if agent.current_pos[0] + 1 > 2 or (
-                agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos:
+        agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2]) == agent.other_pos:
             dirArray.remove(1)  # down
         if agent.current_pos[1] - 1 < 0 or (
-                agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2]) == agent.other_pos:
+        agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2]) == agent.other_pos:
             dirArray.remove(2)  # north
         if agent.current_pos[1] + 1 > 2 or (
-                agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2]) == agent.other_pos:
+        agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2]) == agent.other_pos:
             dirArray.remove(3)  # south
         if agent.current_pos[2] + 1 > 2 or (
-                agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1) == agent.other_pos:
+        agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1) == agent.other_pos:
             dirArray.remove(4)  # east
         if agent.current_pos[2] - 1 < 0 or (
-                agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1) == agent.other_pos:
+        agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1) == agent.other_pos:
             dirArray.remove(5)  # west
 
         return dirArray
 
-# this class takes care of implementing the Q-learning and SARSA algorithm to calculate Q-values for the Q-table
+
 class Qtable:
     # Q[Z][Y][X][block or no block][action]  <-- This is how the q-table is set up
     # Q(s,a) = (1-alpha) * Q(a,s) + alpha*[my_reward.rewardReturn() + gamma * max(Q(a', s'))]
 
+    # this class lets us call the qlearning and SARSA functions
+
     def qLearning(self, m_agent, f_agent, world, var_gamma, var_alpha, num_steps, qtable, experiment):
+        # this is our qlearning function
         p = Policy()
         a = isValid()
         rewards = Reward()
@@ -366,6 +368,7 @@ class Qtable:
                 return i
 
     def SARSA(self, m_agent, f_agent, world, var_gamma, var_alpha, qtable, num_steps):
+        # this is our sarsa function
         p = Policy()
         a = isValid()
         rewards = Reward()
@@ -410,13 +413,13 @@ class Qtable:
 
             if m_agent.have_block == 0:  # sending the old agent twice to the return rewards func bc we just want the reward at that single state
                 qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] += \
-                qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha * (
+                    qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha * (
                             rewards.rewardReturn(old_m, world) + var_gamma *
                             qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][0][m] -
                             qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m])
             elif m_agent.have_block == 1:
                 qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] += \
-                qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha * (
+                    qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][0][m] + var_alpha * (
                             rewards.rewardReturn(old_m, world) + var_gamma *
                             qtable[new_state_m[0]][new_state_m[1]][new_state_m[2]][1][m] -
                             qtable[old_state_m[0]][old_state_m[1]][old_state_m[2]][1][m])
@@ -424,13 +427,13 @@ class Qtable:
             # go to the beginning of the qtable class
             if f_agent.have_block == 0:
                 qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] += \
-                qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f] + var_alpha * (
+                    qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f] + var_alpha * (
                             rewards.rewardReturn(old_f, world) + var_gamma *
                             qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][0][f] -
                             qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][0][f])
             elif f_agent.have_block == 1:
                 qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] += \
-                qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha * (
+                    qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f] + var_alpha * (
                             rewards.rewardReturn(old_f, world) + var_gamma *
                             qtable[new_state_f[0]][new_state_f[1]][new_state_f[2]][1][f] -
                             qtable[old_state_f[0]][old_state_f[1]][old_state_f[2]][1][f])
@@ -458,8 +461,10 @@ class Qtable:
             if i == num_steps - 1:
                 return i
 
-# this class takes care of implementing each of the 3 policy methods to experiment with the agents' moves
+
 class Policy:
+    # this class holds all of the three policies so that we can call them
+
     is_it_valid = isValid()
     myaction = Action()
     rewards = Reward()
@@ -546,11 +551,10 @@ def main():
     seed = int(input("Please input 1 or 2: "))
 
     fem_agent = Agent((0, 0, 0), (2, 1, 2), 0, 0)
-    male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)
+    male_agent = Agent((2, 1, 2), (0, 0, 0), 0, 0)  # initialize agents
 
     fem_agent_copy = Agent((0, 0, 0), (2, 1, 2), 0, 0)
     male_agent_copy = Agent((2, 1, 2), (0, 0, 0), 0, 0)
-    # by layer in 3D
     world_copy = [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 0
                   [[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 1
                   [[0, 0, 0], [0, 0, 0], [0, 0, 0]]]  # 2
@@ -561,7 +565,7 @@ def main():
         world_copy[i[0]][i[1]][i[2]] = 10
 
     for i in dropoffArray:
-        world_copy[i[0]][i[1]][i[2]] = 5
+        world_copy[i[0]][i[1]][i[2]] = 5  # make a copy of the world and agents to ue in experiment 3
 
     var_alpha = 0.3
     var_lambda = 0.5
@@ -575,14 +579,13 @@ def main():
     qtable_copy = qtable
 
     if experiment == "3":
-
         np.random.seed(seed)
         b = q.qLearning(male_agent, fem_agent, world, var_lambda, .1, num_steps, qtable, experiment)
         print("Male agent reward: ", male_agent.reward, " Female agent reward: ", fem_agent.reward)
         # #"number of steps", a)
         print("number steps ", b)
         print("Here is the Qtable: ")
-        print(qtable)
+        print(qtable)  # run experiment 3 with alpha .1
 
         np.random.seed(seed)
         c = q.qLearning(male_agent_copy, fem_agent_copy, world_copy, var_lambda, .5, num_steps, qtable_copy, experiment)
@@ -590,18 +593,19 @@ def main():
         # #"number of steps", a)
         print("number steps ", c)
         print("Here is the Qtable: ")
-        print(qtable)
+        print(qtable)  # run experiment 3 with alpha .5
         return
     else:
         np.random.seed(seed)
         a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps, qtable, experiment)
 
+    # print rewards, number of steps and qtable
     print("Male agent reward: ", male_agent.reward, " Female agent reward: ", fem_agent.reward)
+
     print("number steps ", a)
 
     print("Here is the Qtable: ")
     print(qtable)
-
 
 if __name__ == "__main__":
     main()

@@ -1,17 +1,18 @@
 import numpy as np
-from scipy.spatial.distance import cityblock
 
-# ZYX
+# ZYX form
 pickup1 = (0, 1, 1)
 pickup2 = (1, 2, 2)
-pickupArray = [pickup1, pickup2]  # this establishes all of the pick up cells and adds them to an array
+# this establishes all of the pick up cells and adds them to an array
+pickupArray = [pickup1, pickup2]
 
 dropoff1 = (1, 0, 0)
 dropoff2 = (2, 0, 0)
 dropoff3 = (0, 0, 2)
 dropoff4 = (2, 1, 2)
+# this establishes all of our drop off cells and adds them to an array
 dropoffArray = [dropoff1, dropoff2, dropoff3,
-                dropoff4]  # this establishes all of our drop off cells and adds them to an array
+                dropoff4]
 
 world = [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 0
          [[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 1
@@ -19,6 +20,8 @@ world = [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 0
 
 world = np.array(world)
 
+# here we define our world and fill in all pickupcells to 5 and dropoffcells to 10 and
+# subtract 1 when we pick up/drop off until the world is essentially "empty"
 for i in pickupArray:
     world[i[0]][i[1]][i[2]] = 10
 
@@ -26,8 +29,7 @@ for i in dropoffArray:
     world[i[0]][i[1]][i[2]] = 5
 
 
-# here we define our world and fill in all pickupcells to 5 and dropoffcells to 10 and
-# subtract 1 when we pick up/drop off until the world is essentially "empty"
+
 
 def printQTable(q):  # this function simply prints all the values in the Q-table
     for a, state in enumerate(q.Qtable):
@@ -63,11 +65,12 @@ def agentInfo(agent):
     print("---------------------------------")
 
 
-# don't need a state class bc everything is in agent or cells
+# the agent class is what allows us to initialize all the agents with their position
+# the other agents position to keep them aware of the oposing agent, the agents current reward
+# and finally whether they are holding a block or not
 class Agent:
-    # the agent class is what allows us to initialize all the agents with their position
-    # the other agents position to keep them aware of the oposing agent, the agents current reward
-    # and finally whether they are holding a block or not
+
+
     def __init__(self, current_pos, other_pos, reward,
                  have_block):  # this function initializes the agents with the values mentioned above
         self.current_pos = current_pos  # tuple [z,y,x]
@@ -78,9 +81,9 @@ class Agent:
         # integer
         self.have_block = have_block
 
-
+ # the Reward class allows us to determine what rewards to give an agent based on the cell that they stepped on
 class Reward:
-    # the Reward class allows us to determine what rewards to give an agent based on the cell that they stepped on
+
 
     def canPickUp(self, future_agent, world):
         # this function determines whether we can pick up a block from a pickup cell
@@ -218,7 +221,7 @@ class isValid:
 
         return dirArray
 
-
+# this class takes care of implementing the Q-learning and SARSA algorithm to calculate Q-values for the Q-table
 class Qtable:
     # Q[Z][Y][X][block or no block][action]  <-- This is how the q-table is set up
     # Q(s,a) = (1-alpha) * Q(a,s) + alpha*[my_reward.rewardReturn() + gamma * max(Q(a', s'))]
@@ -463,7 +466,7 @@ class Qtable:
             if i == num_steps - 1:
                 return i
 
-
+# this class takes care of implementing each of the 3 policy methods to experiment with the agents' moves
 class Policy:
     is_it_valid = isValid()
     myaction = Action()
@@ -555,6 +558,7 @@ def main():
 
     fem_agent_copy = Agent((0, 0, 0), (2, 1, 2), 0, 0)
     male_agent_copy = Agent((2, 1, 2), (0, 0, 0), 0, 0)
+    # by layer in 3D
     world_copy = [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 0
                   [[0, 0, 0], [0, 0, 0], [0, 0, 0]],  # 1
                   [[0, 0, 0], [0, 0, 0], [0, 0, 0]]]  # 2
@@ -600,11 +604,7 @@ def main():
         np.random.seed(seed)
         a = q.qLearning(male_agent, fem_agent, world, var_lambda, var_alpha, num_steps, qtable, experiment)
 
-    # # print("Q-Table")
-    # # printQTable(q)
-
     print("Male agent reward: ", male_agent.reward, " Female agent reward: ", fem_agent.reward)
-    # #"number of steps", a)
     print("number steps ", a)
 
     print("Here is the Qtable: ")

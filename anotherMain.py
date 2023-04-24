@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.spatial.distance import cityblock
 
 # ZYX
 pickup1 = (0, 1, 1)
@@ -118,7 +117,7 @@ class Action:
     # instantiate a Reward object to be used in Action class
     rewards = Reward()
 
-    def deduct_cell_value(self, agent, old_agent, world):
+    def deduct_cell_value(self, agent, world):
         if self.rewards.canPickUp(agent, world):
             agent.have_block = 1
         elif self.rewards.canDropOff(agent, world):
@@ -136,35 +135,35 @@ class Action:
             agent.current_pos = (agent.current_pos[0] - 1, agent.current_pos[1], agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-                self.deduct_cell_value(agent, old_agent, world)
+                self.deduct_cell_value(agent, world)
 
 
         elif direction == 1:
             agent.current_pos = (agent.current_pos[0] + 1, agent.current_pos[1], agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-                self.deduct_cell_value(agent, old_agent, world)
+                self.deduct_cell_value(agent, world)
 
 
         elif direction == 2:
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1] - 1, agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-                self.deduct_cell_value(agent, old_agent, world)
+                self.deduct_cell_value(agent, world)
 
 
         elif direction == 3:
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1] + 1, agent.current_pos[2])
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-                self.deduct_cell_value(agent, old_agent, world)
+                self.deduct_cell_value(agent, world)
 
 
         elif direction == 4:
             agent.current_pos = (agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] + 1)
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-                self.deduct_cell_value(agent, old_agent, world)
+                self.deduct_cell_value(agent, world)
 
 
         elif direction == 5:
@@ -172,7 +171,7 @@ class Action:
                 agent.current_pos[0], agent.current_pos[1], agent.current_pos[2] - 1)
             agent_reward = self.rewards.rewardReturn(agent, world)
             if agent_reward == 14:
-                self.deduct_cell_value(agent, old_agent, world)
+                self.deduct_cell_value(agent, world)
 
         agent.reward += agent_reward
         agent2.other_pos = agent.current_pos
@@ -450,6 +449,7 @@ class Policy:
                 directionsQvalues[direction] = self.q.Qtable[state[0]][state[1]][state[2]][0][direction]
             elif agent.have_block == 1:
                 directionsQvalues[direction] = self.q.Qtable[state[0]][state[1]][state[2]][1][direction]
+        print("this is qval", directionsQvalues[direction])
 
         maxdirection = max(directionsQvalues, key=directionsQvalues.get)
         print("this is the max direction: ",  maxdirection, "This is the qvalue: ", directionsQvalues[maxdirection])
